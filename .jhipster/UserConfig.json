@@ -1,0 +1,54 @@
+{
+  "applications": "*",
+  "changelogDate": "20230323121856",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "user_config",
+  "fields": [
+    {
+      "fieldName": "login",
+      "fieldType": "String",
+      "fieldValidateRules": ["unique", "required"]
+    },
+    {
+      "fieldName": "firstName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "lastName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String",
+      "fieldValidateRules": ["unique", "required"]
+    },
+    {
+      "fieldName": "phoneNumber",
+      "fieldType": "String",
+      "fieldValidateRules": ["unique", "required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "UserConfig",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "workLog",
+      "otherEntityRelationshipName": "user",
+      "relationshipName": "workLog",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "timeOffRequest",
+      "otherEntityRelationshipName": "user",
+      "relationshipName": "timeOffRequest",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "no"
+}

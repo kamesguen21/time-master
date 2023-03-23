@@ -1,0 +1,39 @@
+{
+  "applications": "*",
+  "changelogDate": "20230323121858",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "work_log",
+  "fields": [
+    {
+      "fieldName": "timeSpent",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "date",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "WorkLog",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "userConfig",
+      "otherEntityRelationshipName": "workLog",
+      "relationshipName": "user",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "ticket",
+      "otherEntityRelationshipName": "workLog",
+      "relationshipName": "ticket",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}
