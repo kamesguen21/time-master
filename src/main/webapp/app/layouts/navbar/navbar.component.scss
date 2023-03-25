@@ -15,22 +15,21 @@ Navbar
   width: 1.75em;
 }
 
-.navbar {
-  padding: 0.2rem 1rem;
-
-  a.nav-link {
-    font-weight: 400;
+nav {
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 60px;
+  
+  .navbar-nav li a {
+    font-size: 14px;
   }
 }
+
 
 /* ==========================================================================
 Logo styles
 ========================================================================== */
-.logo-img {
-  height: 45px;
-  width: 45px;
-  display: inline-block;
-  vertical-align: middle;
-  background: url('../../../content/images/logo-jhipster.png') no-repeat center center;
-  background-size: contain;
+.logo {
+  width: 250px;
+  height: auto;
 }

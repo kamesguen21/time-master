@@ -1,10 +1,13 @@
-<nav data-cy="navbar" class="navbar navbar-dark navbar-expand-md bg-dark">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
-      <span class="logo-img"></span>
-      <span class="navbar-title">TimeMaster</span>
-      <span class="navbar-version">{{ version }}</span>
-    </a>
+    
+      
+      
+      <a >
+        <img class="logo" src="content/images/T.png" alt="">
+        
+      </a>
+   
     <a
       class="navbar-toggler d-lg-none"
       href="javascript:void(0);"
@@ -15,7 +18,7 @@
       aria-label="Toggle navigation"
       (click)="toggleNavbar()"
     >
-      <fa-icon icon="bars"></fa-icon>
+      
     </a>
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed" [ngSwitch]="account !== null">
       <ul class="navbar-nav ms-auto">
@@ -116,22 +119,13 @@
               </a>
             </li>
             <li>
-              <a class="dropdown-item" routerLink="admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tachometer-alt" [fixedWidth]="true"></fa-icon>
-                <span>Metrics</span>
-              </a>
+             
             </li>
             <li>
-              <a class="dropdown-item" routerLink="admin/health" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="heart" [fixedWidth]="true"></fa-icon>
-                <span>Health</span>
-              </a>
+              
             </li>
             <li>
-              <a class="dropdown-item" routerLink="admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
-                <span>Configuration</span>
-              </a>
+              
             </li>
             <li>
               <a class="dropdown-item" routerLink="admin/logs" routerLinkActive="active" (click)="collapseNavbar()">
