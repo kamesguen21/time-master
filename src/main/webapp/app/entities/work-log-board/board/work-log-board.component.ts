@@ -33,6 +33,7 @@ export class WorkLogBoardComponent implements OnInit {
   username: any = null;
   public board: Board = new Board('Tickets Board', []);
   private tickets: ITicket[] | null = [];
+  private isAdmin: boolean | undefined;
 
   constructor(
     protected accountService: AccountService,
@@ -50,6 +51,8 @@ export class WorkLogBoardComponent implements OnInit {
     this.accountService.identity().subscribe(value => {
       this.userId = value?.id;
       this.username = (value?.firstName || value?.login || 'John') + (value?.lastName || value?.login || 'Doe');
+      this.isAdmin = value?.authorities.includes('ROLE_ADMIN');
+
       this.load();
     });
   }
@@ -85,11 +88,20 @@ export class WorkLogBoardComponent implements OnInit {
   }
 
   load(): void {
-    const queryObject: any = {
-      page: 0,
-      size: 100,
-      'userId.equals': this.userId,
-    };
+    let queryObject: any;
+    if (this.isAdmin) {
+      queryObject = {
+        page: 0,
+        size: 100,
+      };
+    } else {
+      queryObject = {
+        page: 0,
+        size: 100,
+        'userId.equals': this.userId,
+      };
+    }
+
     this.ticketService.query(queryObject).subscribe(value => {
       this.tickets = value.body;
       console.log(this.tickets);

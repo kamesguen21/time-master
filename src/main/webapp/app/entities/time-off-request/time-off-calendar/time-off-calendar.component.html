@@ -1,7 +1,27 @@
-<full-calendar [options]="calendarOptions" (select)="handleDateSelection($event)">
-  <ng-template #dayCellContent let-arg>
-    <b>{{ arg.dayNumberText }}</b>
-    <br />
-    <button class="btn btn-blue" style="width: 100%" (click)="testt(arg)">Add</button>
-  </ng-template>
-</full-calendar>
+<ng-container *ngIf="isAdmin">
+  <jhi-time-off-request></jhi-time-off-request>
+</ng-container>
+<ng-container *ngIf="!isAdmin">
+  <full-calendar [options]="calendarOptions" (select)="handleDateSelection($event)">
+    <ng-template #dayCellContent let-arg>
+      <b>{{ arg.dayNumberText }}</b>
+      <br />
+      <button class="btn btn-blue" style="width: 100%" (click)="addEvent(arg)">Add</button>
+    </ng-template>
+    <ng-template #eventContent let-arg>
+      <br />
+      <div class="card crd" style="width: 18rem" (click)="removeEvent(arg.event.title.split(';')[2])">
+        <div class="card-body">
+          <span class="card-title">{{ arg.event.title.split(';')[0] }}</span>
+          <p class="card-text text-info text-bg" *ngIf="arg.event.title.split(';')[1] === 'PENDING'">{{ arg.event.title.split(';')[1] }}</p>
+          <p class="card-text text-success text-bg" *ngIf="arg.event.title.split(';')[1] === 'APPROVED'">
+            {{ arg.event.title.split(';')[1] }}
+          </p>
+          <p class="card-text text-danger text-bg" *ngIf="arg.event.title.split(';')[1] === 'REJECTED'">
+            {{ arg.event.title.split(';')[1] }}
+          </p>
+        </div>
+      </div>
+    </ng-template>
+  </full-calendar>
+</ng-container>

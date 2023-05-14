@@ -3,7 +3,6 @@
     <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
       <span class="logo-img"></span>
       <span class="navbar-title">Timemaster</span>
-      <span class="navbar-version">{{ version }}</span>
     </a>
     <a
       class="navbar-toggler d-lg-none"
@@ -43,7 +42,7 @@
             </span>
           </a>
           <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
-            <li>
+            <li *jhiHasAnyAuthority="['ROLE_ADMIN']">
               <a
                 class="dropdown-item"
                 routerLink="ticket"
@@ -67,7 +66,7 @@
                 <span>Time Off Request</span>
               </a>
             </li>
-            <li>
+            <li *jhiHasAnyAuthority="['ROLE_ADMIN']">
               <a
                 class="dropdown-item"
                 routerLink="work-log"
@@ -79,7 +78,7 @@
                 <span>Work Log</span>
               </a>
             </li>
-            <li>
+            <li *jhiHasAnyAuthority="['ROLE_ADMIN']">
               <a
                 class="dropdown-item"
                 routerLink="admin/user-management"
@@ -94,7 +93,7 @@
             <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
           </ul>
         </li>
-        <li
+        <!--     <li
           *jhiHasAnyAuthority="'ROLE_ADMIN'"
           ngbDropdown
           class="nav-item dropdown pointer"
@@ -145,7 +144,7 @@
                 <span>API</span>
               </a>
             </li>
-            <!-- jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here -->
+            &lt;!&ndash; jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here &ndash;&gt;
             <li *ngIf="!inProduction">
               <a class="dropdown-item" href="./h2-console/" target="_tab" (click)="collapseNavbar()">
                 <fa-icon icon="database" [fixedWidth]="true"></fa-icon>
@@ -153,7 +152,7 @@
               </a>
             </li>
           </ul>
-        </li>
+        </li>-->
         <li
           ngbDropdown
           class="nav-item dropdown pointer"

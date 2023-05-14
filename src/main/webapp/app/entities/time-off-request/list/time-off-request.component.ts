@@ -149,4 +149,40 @@ export class TimeOffRequestComponent implements OnInit {
       return [predicate + ',' + ascendingQueryParam];
     }
   }
+
+  approve(timeOffRequest: ITimeOffRequest) {
+    const modalRef = this.modalService.open(TimeOffRequestDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.timeOffRequest = timeOffRequest;
+    modalRef.componentInstance.title = 'Approval';
+    modalRef.componentInstance.message = 'Approve';
+    // unsubscribe not needed because closed completes on modal close
+    modalRef.closed
+      .pipe(
+        filter(reason => reason === ITEM_DELETED_EVENT),
+        switchMap(() => this.loadFromBackendWithRouteInformations())
+      )
+      .subscribe({
+        next: (res: EntityArrayResponseType) => {
+          this.onResponseSuccess(res);
+        },
+      });
+  }
+
+  reject(timeOffRequest: ITimeOffRequest) {
+    const modalRef = this.modalService.open(TimeOffRequestDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.timeOffRequest = timeOffRequest;
+    modalRef.componentInstance.title = 'Rejection';
+    modalRef.componentInstance.message = 'Reject';
+    // unsubscribe not needed because closed completes on modal close
+    modalRef.closed
+      .pipe(
+        filter(reason => reason === ITEM_DELETED_EVENT),
+        switchMap(() => this.loadFromBackendWithRouteInformations())
+      )
+      .subscribe({
+        next: (res: EntityArrayResponseType) => {
+          this.onResponseSuccess(res);
+        },
+      });
+  }
 }

@@ -30,6 +30,10 @@
         <dd>
           <span>{{ timeOffRequest.userId }}</span>
         </dd>
+        <dt><span>Leave Reason</span></dt>
+        <dd>
+          <span>{{ timeOffRequest.leaveReason }}</span>
+        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

@@ -32,6 +32,7 @@ export class UserManagementUpdateComponent implements OnInit {
     }),
     firstName: new FormControl(userTemplate.firstName, { validators: [Validators.maxLength(50)] }),
     lastName: new FormControl(userTemplate.lastName, { validators: [Validators.maxLength(50)] }),
+    password: new FormControl(userTemplate.password, { validators: [Validators.maxLength(50)] }),
     email: new FormControl(userTemplate.email, {
       nonNullable: true,
       validators: [Validators.minLength(5), Validators.maxLength(254), Validators.email],

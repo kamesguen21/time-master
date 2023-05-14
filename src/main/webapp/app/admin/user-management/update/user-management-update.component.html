@@ -67,6 +67,13 @@
           <small class="form-text text-danger" *ngIf="editForm.get('email')?.errors?.email"> Your email is invalid. </small>
         </div>
       </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" formControlName="password" />
+        <div *ngIf="editForm.get('password')!.invalid && (editForm.get('password')!.dirty || editForm.get('password')!.touched)">
+          <small class="form-text text-danger" *ngIf="editForm.get('password')?.errors?.required"> This field is required. </small>
+        </div>
+      </div>
 
       <div class="form-check">
         <label class="form-check-label" for="activated">

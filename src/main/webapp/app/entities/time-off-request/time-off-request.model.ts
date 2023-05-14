@@ -7,6 +7,7 @@ export interface ITimeOffRequest {
   endDate?: dayjs.Dayjs | null;
   status?: TimeOffRequestStatus | null;
   userId?: number | null;
+  leaveReason?: string | null;
 }
 
 export type NewTimeOffRequest = Omit<ITimeOffRequest, 'id'> & { id: null };

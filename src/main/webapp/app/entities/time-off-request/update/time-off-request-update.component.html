@@ -58,7 +58,7 @@
           <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
             <option [ngValue]="null"></option>
             <option *ngFor="let timeOffRequestStatus of timeOffRequestStatusValues" [value]="timeOffRequestStatus">
-              timeOffRequestStatus
+              {{ timeOffRequestStatus }}
             </option>
           </select>
         </div>
@@ -66,6 +66,18 @@
         <div class="row mb-3">
           <label class="form-label" for="field_userId">User Id</label>
           <input type="number" class="form-control" name="userId" id="field_userId" data-cy="userId" formControlName="userId" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_leaveReason">Leave Reason</label>
+          <input
+            type="text"
+            class="form-control"
+            name="leaveReason"
+            id="field_leaveReason"
+            data-cy="leaveReason"
+            formControlName="leaveReason"
+          />
         </div>
       </div>
 

@@ -1,0 +1,8 @@
+.crd {
+  background-color: white; /* Default background color */
+  transition: background-color 0.3s ease; /* Optional: Adds a smooth transition effect */
+}
+
+.crd:hover {
+  background-color: #ff5733; /* Background color on hover */
+}

@@ -11,22 +11,24 @@ export const sampleWithRequiredData: ITimeOffRequest = {
 };
 
 export const sampleWithPartialData: ITimeOffRequest = {
-  id: 76272,
-  startDate: dayjs('2023-05-13T16:32'),
-  endDate: dayjs('2023-05-14T11:42'),
+  id: 90663,
+  startDate: dayjs('2023-05-14T11:42'),
+  endDate: dayjs('2023-05-14T07:21'),
+  leaveReason: 'Pound Burundi',
 };
 
 export const sampleWithFullData: ITimeOffRequest = {
-  id: 28956,
-  startDate: dayjs('2023-05-14T00:38'),
-  endDate: dayjs('2023-05-13T21:42'),
+  id: 28305,
+  startDate: dayjs('2023-05-13T18:15'),
+  endDate: dayjs('2023-05-14T02:31'),
   status: TimeOffRequestStatus['REJECTED'],
-  userId: 78329,
+  userId: 59852,
+  leaveReason: 'Soft',
 };
 
 export const sampleWithNewData: NewTimeOffRequest = {
-  startDate: dayjs('2023-05-14T01:13'),
-  endDate: dayjs('2023-05-14T10:56'),
+  startDate: dayjs('2023-05-14T01:54'),
+  endDate: dayjs('2023-05-13T20:04'),
   id: null,
 };
 

@@ -36,6 +36,7 @@ type TimeOffRequestFormGroupContent = {
   endDate: FormControl<TimeOffRequestFormRawValue['endDate']>;
   status: FormControl<TimeOffRequestFormRawValue['status']>;
   userId: FormControl<TimeOffRequestFormRawValue['userId']>;
+  leaveReason: FormControl<TimeOffRequestFormRawValue['leaveReason']>;
 };
 
 export type TimeOffRequestFormGroup = FormGroup<TimeOffRequestFormGroupContent>;
@@ -63,6 +64,7 @@ export class TimeOffRequestFormService {
       }),
       status: new FormControl(timeOffRequestRawValue.status),
       userId: new FormControl(timeOffRequestRawValue.userId),
+      leaveReason: new FormControl(timeOffRequestRawValue.leaveReason),
     });
   }
 

@@ -24,6 +24,7 @@ describe('TimeOffRequest Form Service', () => {
             endDate: expect.any(Object),
             status: expect.any(Object),
             userId: expect.any(Object),
+            leaveReason: expect.any(Object),
           })
         );
       });
@@ -38,6 +39,7 @@ describe('TimeOffRequest Form Service', () => {
             endDate: expect.any(Object),
             status: expect.any(Object),
             userId: expect.any(Object),
+            leaveReason: expect.any(Object),
           })
         );
       });
