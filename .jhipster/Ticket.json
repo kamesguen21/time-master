@@ -1,12 +1,12 @@
 {
-  "applications": "*",
-  "changelogDate": "20230323121857",
+  "applications": ["timemaster"],
+  "changelogDate": "20230514141817",
   "dto": "no",
   "embedded": false,
   "entityTableName": "ticket",
   "fields": [
     {
-      "fieldName": "key",
+      "fieldName": "jiraKey",
       "fieldType": "String",
       "fieldValidateRules": ["required"]
     },
@@ -18,6 +18,10 @@
     {
       "fieldName": "description",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "userId",
+      "fieldType": "Long"
     }
   ],
   "fluentMethods": true,

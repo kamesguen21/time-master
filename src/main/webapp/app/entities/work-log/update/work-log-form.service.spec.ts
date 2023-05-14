@@ -22,7 +22,7 @@ describe('WorkLog Form Service', () => {
             id: expect.any(Object),
             timeSpent: expect.any(Object),
             date: expect.any(Object),
-            user: expect.any(Object),
+            userId: expect.any(Object),
             ticket: expect.any(Object),
           })
         );
@@ -36,7 +36,7 @@ describe('WorkLog Form Service', () => {
             id: expect.any(Object),
             timeSpent: expect.any(Object),
             date: expect.any(Object),
-            user: expect.any(Object),
+            userId: expect.any(Object),
             ticket: expect.any(Object),
           })
         );

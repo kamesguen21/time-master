@@ -15,7 +15,7 @@
         [routerLink]="['/work-log/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span class="hidden-sm-down"> Create a new Work Log </span>
+        <span> Create a new Work Log </span>
       </button>
     </div>
   </h2>
@@ -23,23 +23,6 @@
   <jhi-alert-error></jhi-alert-error>
 
   <jhi-alert></jhi-alert>
-
-  <form name="searchForm" class="row row-cols-sm-auto align-items-center">
-    <div class="col-sm-12">
-      <div class="input-group w-100 mt-3">
-        <label class="visually-hidden" for="currentSearch">Search for Work Log</label>
-        <input type="text" class="form-control" [(ngModel)]="currentSearch" id="currentSearch" name="currentSearch" placeholder="Query" />
-
-        <button class="btn btn-info" (click)="search(currentSearch)">
-          <fa-icon icon="search"></fa-icon>
-        </button>
-
-        <button class="btn btn-danger" (click)="search('')" *ngIf="currentSearch">
-          <fa-icon icon="trash-alt"></fa-icon>
-        </button>
-      </div>
-    </div>
-  </form>
 
   <div class="alert alert-warning" id="no-result" *ngIf="workLogs?.length === 0">
     <span>No Work Logs found</span>
@@ -67,9 +50,9 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="user.id">
+          <th scope="col" jhiSortBy="userId">
             <div class="d-flex">
-              <span>User</span>
+              <span>User Id</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -89,11 +72,7 @@
           </td>
           <td>{{ workLog.timeSpent }}</td>
           <td>{{ workLog.date | formatMediumDatetime }}</td>
-          <td>
-            <div *ngIf="workLog.user">
-              <a [routerLink]="['/user-config', workLog.user.id, 'view']">{{ workLog.user.id }}</a>
-            </div>
-          </td>
+          <td>{{ workLog.userId }}</td>
           <td>
             <div *ngIf="workLog.ticket">
               <a [routerLink]="['/ticket', workLog.ticket.id, 'view']">{{ workLog.ticket.id }}</a>

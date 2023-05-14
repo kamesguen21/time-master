@@ -1,6 +1,5 @@
 package io.satoripop.time.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.Instant;
 import javax.persistence.*;
@@ -11,7 +10,6 @@ import javax.validation.constraints.*;
  */
 @Entity
 @Table(name = "time_off_request")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "timeoffrequest")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class TimeOffRequest implements Serializable {
 
@@ -34,9 +32,8 @@ public class TimeOffRequest implements Serializable {
     @Column(name = "status")
     private String status;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "workLogs", "timeOffRequests" }, allowSetters = true)
-    private UserConfig user;
+    @Column(name = "user_id")
+    private Long userId;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -92,17 +89,17 @@ public class TimeOffRequest implements Serializable {
         this.status = status;
     }
 
-    public UserConfig getUser() {
-        return this.user;
+    public Long getUserId() {
+        return this.userId;
     }
 
-    public void setUser(UserConfig userConfig) {
-        this.user = userConfig;
-    }
-
-    public TimeOffRequest user(UserConfig userConfig) {
-        this.setUser(userConfig);
+    public TimeOffRequest userId(Long userId) {
+        this.setUserId(userId);
         return this;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
@@ -132,6 +129,7 @@ public class TimeOffRequest implements Serializable {
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             ", status='" + getStatus() + "'" +
+            ", userId=" + getUserId() +
             "}";
     }
 }

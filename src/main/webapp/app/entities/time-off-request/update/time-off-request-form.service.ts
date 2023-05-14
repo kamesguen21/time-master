@@ -35,7 +35,7 @@ type TimeOffRequestFormGroupContent = {
   startDate: FormControl<TimeOffRequestFormRawValue['startDate']>;
   endDate: FormControl<TimeOffRequestFormRawValue['endDate']>;
   status: FormControl<TimeOffRequestFormRawValue['status']>;
-  user: FormControl<TimeOffRequestFormRawValue['user']>;
+  userId: FormControl<TimeOffRequestFormRawValue['userId']>;
 };
 
 export type TimeOffRequestFormGroup = FormGroup<TimeOffRequestFormGroupContent>;
@@ -62,7 +62,7 @@ export class TimeOffRequestFormService {
         validators: [Validators.required],
       }),
       status: new FormControl(timeOffRequestRawValue.status),
-      user: new FormControl(timeOffRequestRawValue.user),
+      userId: new FormControl(timeOffRequestRawValue.userId),
     });
   }
 

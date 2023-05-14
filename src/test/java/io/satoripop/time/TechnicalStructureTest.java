@@ -9,7 +9,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
-@AnalyzeClasses(packagesOf = TimeMasterApp.class, importOptions = DoNotIncludeTests.class)
+@AnalyzeClasses(packagesOf = TimemasterApp.class, importOptions = DoNotIncludeTests.class)
 class TechnicalStructureTest {
 
     // prettier-ignore
@@ -29,7 +29,7 @@ class TechnicalStructureTest {
         .whereLayer("Persistence").mayOnlyBeAccessedByLayers("Service", "Security", "Web", "Config")
         .whereLayer("Domain").mayOnlyBeAccessedByLayers("Persistence", "Service", "Security", "Web", "Config")
 
-        .ignoreDependency(belongToAnyOf(TimeMasterApp.class), alwaysTrue())
+        .ignoreDependency(belongToAnyOf(TimemasterApp.class), alwaysTrue())
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
             io.satoripop.time.config.Constants.class,
             io.satoripop.time.config.ApplicationProperties.class

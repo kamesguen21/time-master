@@ -23,7 +23,7 @@ describe('TimeOffRequest Form Service', () => {
             startDate: expect.any(Object),
             endDate: expect.any(Object),
             status: expect.any(Object),
-            user: expect.any(Object),
+            userId: expect.any(Object),
           })
         );
       });
@@ -37,7 +37,7 @@ describe('TimeOffRequest Form Service', () => {
             startDate: expect.any(Object),
             endDate: expect.any(Object),
             status: expect.any(Object),
-            user: expect.any(Object),
+            userId: expect.any(Object),
           })
         );
       });

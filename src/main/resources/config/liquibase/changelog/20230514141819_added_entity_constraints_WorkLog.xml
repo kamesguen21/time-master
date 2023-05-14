@@ -4,14 +4,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <!--
-        Added the constraints for entity TimeOffRequest.
+        Added the constraints for entity WorkLog.
     -->
-    <changeSet id="20230323121859-2" author="jhipster">
+    <changeSet id="20230514141819-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="time_off_request"
-                                 constraintName="fk_time_off_request__user_id"
+        <addForeignKeyConstraint baseColumnNames="ticket_id"
+                                 baseTableName="work_log"
+                                 constraintName="fk_work_log__ticket_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="user_config"/>
+                                 referencedTableName="ticket"/>
     </changeSet>
 </databaseChangeLog>

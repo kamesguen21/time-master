@@ -12,7 +12,6 @@ import javax.validation.constraints.*;
  */
 @Entity
 @Table(name = "ticket")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "ticket")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Ticket implements Serializable {
 
@@ -25,8 +24,8 @@ public class Ticket implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "key", nullable = false)
-    private String key;
+    @Column(name = "jira_key", nullable = false)
+    private String jiraKey;
 
     @NotNull
     @Column(name = "summary", nullable = false)
@@ -35,9 +34,11 @@ public class Ticket implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @OneToMany(mappedBy = "ticket")
-    @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "user", "ticket" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "ticket" }, allowSetters = true)
     private Set<WorkLog> workLogs = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -55,17 +56,17 @@ public class Ticket implements Serializable {
         this.id = id;
     }
 
-    public String getKey() {
-        return this.key;
+    public String getJiraKey() {
+        return this.jiraKey;
     }
 
-    public Ticket key(String key) {
-        this.setKey(key);
+    public Ticket jiraKey(String jiraKey) {
+        this.setJiraKey(jiraKey);
         return this;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setJiraKey(String jiraKey) {
+        this.jiraKey = jiraKey;
     }
 
     public String getSummary() {
@@ -92,6 +93,19 @@ public class Ticket implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public Ticket userId(Long userId) {
+        this.setUserId(userId);
+        return this;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Set<WorkLog> getWorkLogs() {
@@ -149,9 +163,10 @@ public class Ticket implements Serializable {
     public String toString() {
         return "Ticket{" +
             "id=" + getId() +
-            ", key='" + getKey() + "'" +
+            ", jiraKey='" + getJiraKey() + "'" +
             ", summary='" + getSummary() + "'" +
             ", description='" + getDescription() + "'" +
+            ", userId=" + getUserId() +
             "}";
     }
 }

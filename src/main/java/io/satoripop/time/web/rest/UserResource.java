@@ -1,7 +1,5 @@
 package io.satoripop.time.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
 import io.satoripop.time.config.Constants;
 import io.satoripop.time.domain.User;
 import io.satoripop.time.repository.UserRepository;
@@ -16,8 +14,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import org.slf4j.Logger;

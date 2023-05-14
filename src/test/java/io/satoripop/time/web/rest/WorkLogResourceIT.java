@@ -1,28 +1,19 @@
 package io.satoripop.time.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import io.satoripop.time.IntegrationTest;
 import io.satoripop.time.domain.WorkLog;
 import io.satoripop.time.repository.WorkLogRepository;
-import io.satoripop.time.repository.search.WorkLogSearchRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
 import javax.persistence.EntityManager;
-import org.apache.commons.collections4.IterableUtils;
-import org.assertj.core.util.IterableUtil;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,18 +37,17 @@ class WorkLogResourceIT {
     private static final Instant DEFAULT_DATE = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
+    private static final Long DEFAULT_USER_ID = 1L;
+    private static final Long UPDATED_USER_ID = 2L;
+
     private static final String ENTITY_API_URL = "/api/work-logs";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/_search/work-logs";
 
     private static Random random = new Random();
     private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private WorkLogRepository workLogRepository;
-
-    @Autowired
-    private WorkLogSearchRepository workLogSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -74,7 +64,7 @@ class WorkLogResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static WorkLog createEntity(EntityManager em) {
-        WorkLog workLog = new WorkLog().timeSpent(DEFAULT_TIME_SPENT).date(DEFAULT_DATE);
+        WorkLog workLog = new WorkLog().timeSpent(DEFAULT_TIME_SPENT).date(DEFAULT_DATE).userId(DEFAULT_USER_ID);
         return workLog;
     }
 
@@ -85,14 +75,8 @@ class WorkLogResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static WorkLog createUpdatedEntity(EntityManager em) {
-        WorkLog workLog = new WorkLog().timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE);
+        WorkLog workLog = new WorkLog().timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID);
         return workLog;
-    }
-
-    @AfterEach
-    public void cleanupElasticSearchRepository() {
-        workLogSearchRepository.deleteAll();
-        assertThat(workLogSearchRepository.count()).isEqualTo(0);
     }
 
     @BeforeEach
@@ -104,7 +88,6 @@ class WorkLogResourceIT {
     @Transactional
     void createWorkLog() throws Exception {
         int databaseSizeBeforeCreate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         // Create the WorkLog
         restWorkLogMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(workLog)))
@@ -113,15 +96,10 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeCreate + 1);
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
         WorkLog testWorkLog = workLogList.get(workLogList.size() - 1);
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(DEFAULT_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(DEFAULT_DATE);
+        assertThat(testWorkLog.getUserId()).isEqualTo(DEFAULT_USER_ID);
     }
 
     @Test
@@ -131,7 +109,6 @@ class WorkLogResourceIT {
         workLog.setId(1L);
 
         int databaseSizeBeforeCreate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restWorkLogMockMvc
@@ -141,15 +118,12 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTimeSpentIsRequired() throws Exception {
         int databaseSizeBeforeTest = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         // set the field null
         workLog.setTimeSpent(null);
 
@@ -161,15 +135,12 @@ class WorkLogResourceIT {
 
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeTest);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkDateIsRequired() throws Exception {
         int databaseSizeBeforeTest = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         // set the field null
         workLog.setDate(null);
 
@@ -181,8 +152,6 @@ class WorkLogResourceIT {
 
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeTest);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -198,7 +167,8 @@ class WorkLogResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(workLog.getId().intValue())))
             .andExpect(jsonPath("$.[*].timeSpent").value(hasItem(DEFAULT_TIME_SPENT)))
-            .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())));
+            .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())));
     }
 
     @Test
@@ -214,7 +184,8 @@ class WorkLogResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(workLog.getId().intValue()))
             .andExpect(jsonPath("$.timeSpent").value(DEFAULT_TIME_SPENT))
-            .andExpect(jsonPath("$.date").value(DEFAULT_DATE.toString()));
+            .andExpect(jsonPath("$.date").value(DEFAULT_DATE.toString()))
+            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()));
     }
 
     @Test
@@ -231,14 +202,12 @@ class WorkLogResourceIT {
         workLogRepository.saveAndFlush(workLog);
 
         int databaseSizeBeforeUpdate = workLogRepository.findAll().size();
-        workLogSearchRepository.save(workLog);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
 
         // Update the workLog
         WorkLog updatedWorkLog = workLogRepository.findById(workLog.getId()).get();
         // Disconnect from session so that the updates on updatedWorkLog are not directly saved in db
         em.detach(updatedWorkLog);
-        updatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE);
+        updatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID);
 
         restWorkLogMockMvc
             .perform(
@@ -254,23 +223,13 @@ class WorkLogResourceIT {
         WorkLog testWorkLog = workLogList.get(workLogList.size() - 1);
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(UPDATED_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(UPDATED_DATE);
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<WorkLog> workLogSearchList = IterableUtils.toList(workLogSearchRepository.findAll());
-                WorkLog testWorkLogSearch = workLogSearchList.get(searchDatabaseSizeAfter - 1);
-                assertThat(testWorkLogSearch.getTimeSpent()).isEqualTo(UPDATED_TIME_SPENT);
-                assertThat(testWorkLogSearch.getDate()).isEqualTo(UPDATED_DATE);
-            });
+        assertThat(testWorkLog.getUserId()).isEqualTo(UPDATED_USER_ID);
     }
 
     @Test
     @Transactional
     void putNonExistingWorkLog() throws Exception {
         int databaseSizeBeforeUpdate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         workLog.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -285,15 +244,12 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchWorkLog() throws Exception {
         int databaseSizeBeforeUpdate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         workLog.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -308,15 +264,12 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamWorkLog() throws Exception {
         int databaseSizeBeforeUpdate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         workLog.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -327,8 +280,6 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -343,7 +294,7 @@ class WorkLogResourceIT {
         WorkLog partialUpdatedWorkLog = new WorkLog();
         partialUpdatedWorkLog.setId(workLog.getId());
 
-        partialUpdatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE);
+        partialUpdatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID);
 
         restWorkLogMockMvc
             .perform(
@@ -359,6 +310,7 @@ class WorkLogResourceIT {
         WorkLog testWorkLog = workLogList.get(workLogList.size() - 1);
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(UPDATED_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(UPDATED_DATE);
+        assertThat(testWorkLog.getUserId()).isEqualTo(UPDATED_USER_ID);
     }
 
     @Test
@@ -373,7 +325,7 @@ class WorkLogResourceIT {
         WorkLog partialUpdatedWorkLog = new WorkLog();
         partialUpdatedWorkLog.setId(workLog.getId());
 
-        partialUpdatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE);
+        partialUpdatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID);
 
         restWorkLogMockMvc
             .perform(
@@ -389,13 +341,13 @@ class WorkLogResourceIT {
         WorkLog testWorkLog = workLogList.get(workLogList.size() - 1);
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(UPDATED_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(UPDATED_DATE);
+        assertThat(testWorkLog.getUserId()).isEqualTo(UPDATED_USER_ID);
     }
 
     @Test
     @Transactional
     void patchNonExistingWorkLog() throws Exception {
         int databaseSizeBeforeUpdate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         workLog.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -410,15 +362,12 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchWorkLog() throws Exception {
         int databaseSizeBeforeUpdate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         workLog.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -433,15 +382,12 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamWorkLog() throws Exception {
         int databaseSizeBeforeUpdate = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
         workLog.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -452,8 +398,6 @@ class WorkLogResourceIT {
         // Validate the WorkLog in the database
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -461,12 +405,8 @@ class WorkLogResourceIT {
     void deleteWorkLog() throws Exception {
         // Initialize the database
         workLogRepository.saveAndFlush(workLog);
-        workLogRepository.save(workLog);
-        workLogSearchRepository.save(workLog);
 
         int databaseSizeBeforeDelete = workLogRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the workLog
         restWorkLogMockMvc
@@ -476,24 +416,5 @@ class WorkLogResourceIT {
         // Validate the database contains one less item
         List<WorkLog> workLogList = workLogRepository.findAll();
         assertThat(workLogList).hasSize(databaseSizeBeforeDelete - 1);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(workLogSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchWorkLog() throws Exception {
-        // Initialize the database
-        workLog = workLogRepository.saveAndFlush(workLog);
-        workLogSearchRepository.save(workLog);
-
-        // Search the workLog
-        restWorkLogMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + workLog.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(workLog.getId().intValue())))
-            .andExpect(jsonPath("$.[*].timeSpent").value(hasItem(DEFAULT_TIME_SPENT)))
-            .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())));
     }
 }

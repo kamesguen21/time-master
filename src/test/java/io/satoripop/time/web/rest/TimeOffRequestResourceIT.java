@@ -1,28 +1,19 @@
 package io.satoripop.time.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import io.satoripop.time.IntegrationTest;
 import io.satoripop.time.domain.TimeOffRequest;
 import io.satoripop.time.repository.TimeOffRequestRepository;
-import io.satoripop.time.repository.search.TimeOffRequestSearchRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
 import javax.persistence.EntityManager;
-import org.apache.commons.collections4.IterableUtils;
-import org.assertj.core.util.IterableUtil;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,18 +40,17 @@ class TimeOffRequestResourceIT {
     private static final String DEFAULT_STATUS = "AAAAAAAAAA";
     private static final String UPDATED_STATUS = "BBBBBBBBBB";
 
+    private static final Long DEFAULT_USER_ID = 1L;
+    private static final Long UPDATED_USER_ID = 2L;
+
     private static final String ENTITY_API_URL = "/api/time-off-requests";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/_search/time-off-requests";
 
     private static Random random = new Random();
     private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private TimeOffRequestRepository timeOffRequestRepository;
-
-    @Autowired
-    private TimeOffRequestSearchRepository timeOffRequestSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -77,7 +67,11 @@ class TimeOffRequestResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TimeOffRequest createEntity(EntityManager em) {
-        TimeOffRequest timeOffRequest = new TimeOffRequest().startDate(DEFAULT_START_DATE).endDate(DEFAULT_END_DATE).status(DEFAULT_STATUS);
+        TimeOffRequest timeOffRequest = new TimeOffRequest()
+            .startDate(DEFAULT_START_DATE)
+            .endDate(DEFAULT_END_DATE)
+            .status(DEFAULT_STATUS)
+            .userId(DEFAULT_USER_ID);
         return timeOffRequest;
     }
 
@@ -88,14 +82,12 @@ class TimeOffRequestResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TimeOffRequest createUpdatedEntity(EntityManager em) {
-        TimeOffRequest timeOffRequest = new TimeOffRequest().startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).status(UPDATED_STATUS);
+        TimeOffRequest timeOffRequest = new TimeOffRequest()
+            .startDate(UPDATED_START_DATE)
+            .endDate(UPDATED_END_DATE)
+            .status(UPDATED_STATUS)
+            .userId(UPDATED_USER_ID);
         return timeOffRequest;
-    }
-
-    @AfterEach
-    public void cleanupElasticSearchRepository() {
-        timeOffRequestSearchRepository.deleteAll();
-        assertThat(timeOffRequestSearchRepository.count()).isEqualTo(0);
     }
 
     @BeforeEach
@@ -107,7 +99,6 @@ class TimeOffRequestResourceIT {
     @Transactional
     void createTimeOffRequest() throws Exception {
         int databaseSizeBeforeCreate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         // Create the TimeOffRequest
         restTimeOffRequestMockMvc
             .perform(
@@ -118,16 +109,11 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeCreate + 1);
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
         TimeOffRequest testTimeOffRequest = timeOffRequestList.get(timeOffRequestList.size() - 1);
         assertThat(testTimeOffRequest.getStartDate()).isEqualTo(DEFAULT_START_DATE);
         assertThat(testTimeOffRequest.getEndDate()).isEqualTo(DEFAULT_END_DATE);
         assertThat(testTimeOffRequest.getStatus()).isEqualTo(DEFAULT_STATUS);
+        assertThat(testTimeOffRequest.getUserId()).isEqualTo(DEFAULT_USER_ID);
     }
 
     @Test
@@ -137,7 +123,6 @@ class TimeOffRequestResourceIT {
         timeOffRequest.setId(1L);
 
         int databaseSizeBeforeCreate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restTimeOffRequestMockMvc
@@ -149,15 +134,12 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkStartDateIsRequired() throws Exception {
         int databaseSizeBeforeTest = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         // set the field null
         timeOffRequest.setStartDate(null);
 
@@ -171,15 +153,12 @@ class TimeOffRequestResourceIT {
 
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeTest);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkEndDateIsRequired() throws Exception {
         int databaseSizeBeforeTest = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         // set the field null
         timeOffRequest.setEndDate(null);
 
@@ -193,8 +172,6 @@ class TimeOffRequestResourceIT {
 
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeTest);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -211,7 +188,8 @@ class TimeOffRequestResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(timeOffRequest.getId().intValue())))
             .andExpect(jsonPath("$.[*].startDate").value(hasItem(DEFAULT_START_DATE.toString())))
             .andExpect(jsonPath("$.[*].endDate").value(hasItem(DEFAULT_END_DATE.toString())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)));
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)))
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())));
     }
 
     @Test
@@ -228,7 +206,8 @@ class TimeOffRequestResourceIT {
             .andExpect(jsonPath("$.id").value(timeOffRequest.getId().intValue()))
             .andExpect(jsonPath("$.startDate").value(DEFAULT_START_DATE.toString()))
             .andExpect(jsonPath("$.endDate").value(DEFAULT_END_DATE.toString()))
-            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS));
+            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS))
+            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()));
     }
 
     @Test
@@ -245,14 +224,12 @@ class TimeOffRequestResourceIT {
         timeOffRequestRepository.saveAndFlush(timeOffRequest);
 
         int databaseSizeBeforeUpdate = timeOffRequestRepository.findAll().size();
-        timeOffRequestSearchRepository.save(timeOffRequest);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
 
         // Update the timeOffRequest
         TimeOffRequest updatedTimeOffRequest = timeOffRequestRepository.findById(timeOffRequest.getId()).get();
         // Disconnect from session so that the updates on updatedTimeOffRequest are not directly saved in db
         em.detach(updatedTimeOffRequest);
-        updatedTimeOffRequest.startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).status(UPDATED_STATUS);
+        updatedTimeOffRequest.startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).status(UPDATED_STATUS).userId(UPDATED_USER_ID);
 
         restTimeOffRequestMockMvc
             .perform(
@@ -269,24 +246,13 @@ class TimeOffRequestResourceIT {
         assertThat(testTimeOffRequest.getStartDate()).isEqualTo(UPDATED_START_DATE);
         assertThat(testTimeOffRequest.getEndDate()).isEqualTo(UPDATED_END_DATE);
         assertThat(testTimeOffRequest.getStatus()).isEqualTo(UPDATED_STATUS);
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<TimeOffRequest> timeOffRequestSearchList = IterableUtils.toList(timeOffRequestSearchRepository.findAll());
-                TimeOffRequest testTimeOffRequestSearch = timeOffRequestSearchList.get(searchDatabaseSizeAfter - 1);
-                assertThat(testTimeOffRequestSearch.getStartDate()).isEqualTo(UPDATED_START_DATE);
-                assertThat(testTimeOffRequestSearch.getEndDate()).isEqualTo(UPDATED_END_DATE);
-                assertThat(testTimeOffRequestSearch.getStatus()).isEqualTo(UPDATED_STATUS);
-            });
+        assertThat(testTimeOffRequest.getUserId()).isEqualTo(UPDATED_USER_ID);
     }
 
     @Test
     @Transactional
     void putNonExistingTimeOffRequest() throws Exception {
         int databaseSizeBeforeUpdate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         timeOffRequest.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -301,15 +267,12 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchTimeOffRequest() throws Exception {
         int databaseSizeBeforeUpdate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         timeOffRequest.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -324,15 +287,12 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamTimeOffRequest() throws Exception {
         int databaseSizeBeforeUpdate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         timeOffRequest.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -343,8 +303,6 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -374,6 +332,7 @@ class TimeOffRequestResourceIT {
         assertThat(testTimeOffRequest.getStartDate()).isEqualTo(DEFAULT_START_DATE);
         assertThat(testTimeOffRequest.getEndDate()).isEqualTo(DEFAULT_END_DATE);
         assertThat(testTimeOffRequest.getStatus()).isEqualTo(DEFAULT_STATUS);
+        assertThat(testTimeOffRequest.getUserId()).isEqualTo(DEFAULT_USER_ID);
     }
 
     @Test
@@ -388,7 +347,7 @@ class TimeOffRequestResourceIT {
         TimeOffRequest partialUpdatedTimeOffRequest = new TimeOffRequest();
         partialUpdatedTimeOffRequest.setId(timeOffRequest.getId());
 
-        partialUpdatedTimeOffRequest.startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).status(UPDATED_STATUS);
+        partialUpdatedTimeOffRequest.startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).status(UPDATED_STATUS).userId(UPDATED_USER_ID);
 
         restTimeOffRequestMockMvc
             .perform(
@@ -405,13 +364,13 @@ class TimeOffRequestResourceIT {
         assertThat(testTimeOffRequest.getStartDate()).isEqualTo(UPDATED_START_DATE);
         assertThat(testTimeOffRequest.getEndDate()).isEqualTo(UPDATED_END_DATE);
         assertThat(testTimeOffRequest.getStatus()).isEqualTo(UPDATED_STATUS);
+        assertThat(testTimeOffRequest.getUserId()).isEqualTo(UPDATED_USER_ID);
     }
 
     @Test
     @Transactional
     void patchNonExistingTimeOffRequest() throws Exception {
         int databaseSizeBeforeUpdate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         timeOffRequest.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -426,15 +385,12 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchTimeOffRequest() throws Exception {
         int databaseSizeBeforeUpdate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         timeOffRequest.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -449,15 +405,12 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamTimeOffRequest() throws Exception {
         int databaseSizeBeforeUpdate = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
         timeOffRequest.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -470,8 +423,6 @@ class TimeOffRequestResourceIT {
         // Validate the TimeOffRequest in the database
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -479,12 +430,8 @@ class TimeOffRequestResourceIT {
     void deleteTimeOffRequest() throws Exception {
         // Initialize the database
         timeOffRequestRepository.saveAndFlush(timeOffRequest);
-        timeOffRequestRepository.save(timeOffRequest);
-        timeOffRequestSearchRepository.save(timeOffRequest);
 
         int databaseSizeBeforeDelete = timeOffRequestRepository.findAll().size();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the timeOffRequest
         restTimeOffRequestMockMvc
@@ -494,25 +441,5 @@ class TimeOffRequestResourceIT {
         // Validate the database contains one less item
         List<TimeOffRequest> timeOffRequestList = timeOffRequestRepository.findAll();
         assertThat(timeOffRequestList).hasSize(databaseSizeBeforeDelete - 1);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(timeOffRequestSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
-    }
-
-    @Test
-    @Transactional
-    void searchTimeOffRequest() throws Exception {
-        // Initialize the database
-        timeOffRequest = timeOffRequestRepository.saveAndFlush(timeOffRequest);
-        timeOffRequestSearchRepository.save(timeOffRequest);
-
-        // Search the timeOffRequest
-        restTimeOffRequestMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + timeOffRequest.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(timeOffRequest.getId().intValue())))
-            .andExpect(jsonPath("$.[*].startDate").value(hasItem(DEFAULT_START_DATE.toString())))
-            .andExpect(jsonPath("$.[*].endDate").value(hasItem(DEFAULT_END_DATE.toString())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)));
     }
 }

@@ -15,7 +15,7 @@
 
 spring:
   application:
-    name: timeMaster
+    name: timemaster
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: test
@@ -33,13 +33,13 @@ spring:
     basename: i18n/messages
   task:
     execution:
-      thread-name-prefix: time-master-task-
+      thread-name-prefix: timemaster-task-
       pool:
         core-size: 1
         max-size: 50
         queue-capacity: 10000
     scheduling:
-      thread-name-prefix: time-master-scheduling-
+      thread-name-prefix: timemaster-scheduling-
       pool:
         size: 20
   thymeleaf:
@@ -56,9 +56,9 @@ server:
 # ===================================================================
 jhipster:
   clientApp:
-    name: 'timeMasterApp'
+    name: 'timemasterApp'
   mail:
-    from: timeMaster@localhost.com
+    from: timemaster@localhost.com
     base-url: http://127.0.0.1:8080
   logging:
     # To test json console appender
@@ -72,7 +72,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 (you can type `echo 'secret-key'|base64` on your command line)
-        base64-secret: N2E3MGJhNTQ2MTAyMGUyNmY1NTExNzZjMTEyZmRlNjllMjEzNTc4ZDY1YTZkMDczOGY4YWU3NjFjZjU3NGE4NWI1MzFlNWQ3NzVkODRjODVmOTNiYzIzZjg1ZjYxNzQzNThjZmNlNDBjZjJkYTJiMDdiNzZlNTIwY2M3ZjA4MGM=
+        base64-secret: ZmVhMGZlMzgyOWM5NWI1MzU0NGI3MGVmY2NmYzRjNzM5NWNjZDFhODFlOGNjZWQ3M2VjNTUxMmU0YWEyMzliOGU2YzFmY2NlMTZiOTZlZTdhZWYwODg0ZWVjZGZlODgxNTVhYTM5MGFlNTdhN2YwNzc4NTA5YjBlYTYyNDE0Nzc=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
 

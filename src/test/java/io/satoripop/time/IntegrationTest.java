@@ -1,8 +1,7 @@
 package io.satoripop.time;
 
-import io.satoripop.time.TimeMasterApp;
+import io.satoripop.time.TimemasterApp;
 import io.satoripop.time.config.AsyncSyncConfiguration;
-import io.satoripop.time.config.EmbeddedElasticsearch;
 import io.satoripop.time.config.EmbeddedSQL;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,8 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@SpringBootTest(classes = { TimeMasterApp.class, AsyncSyncConfiguration.class })
-@EmbeddedElasticsearch
+@SpringBootTest(classes = { TimemasterApp.class, AsyncSyncConfiguration.class })
 @EmbeddedSQL
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public @interface IntegrationTest {

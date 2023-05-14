@@ -14,14 +14,11 @@ import { SortService } from 'app/shared/sort/sort.service';
   templateUrl: './time-off-request.component.html',
 })
 export class TimeOffRequestComponent implements OnInit {
-  private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['status'];
-
   timeOffRequests?: ITimeOffRequest[];
   isLoading = false;
 
   predicate = 'id';
   ascending = true;
-  currentSearch = '';
 
   constructor(
     protected timeOffRequestService: TimeOffRequestService,
@@ -32,15 +29,6 @@ export class TimeOffRequestComponent implements OnInit {
   ) {}
 
   trackId = (_index: number, item: ITimeOffRequest): number => this.timeOffRequestService.getTimeOffRequestIdentifier(item);
-
-  search(query: string): void {
-    if (query && TimeOffRequestComponent.NOT_SORTABLE_FIELDS_AFTER_SEARCH.includes(this.predicate)) {
-      this.predicate = 'id';
-      this.ascending = true;
-    }
-    this.currentSearch = query;
-    this.navigateToWithComponentValues();
-  }
 
   ngOnInit(): void {
     this.load();
@@ -71,13 +59,13 @@ export class TimeOffRequestComponent implements OnInit {
   }
 
   navigateToWithComponentValues(): void {
-    this.handleNavigation(this.predicate, this.ascending, this.currentSearch);
+    this.handleNavigation(this.predicate, this.ascending);
   }
 
   protected loadFromBackendWithRouteInformations(): Observable<EntityArrayResponseType> {
     return combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
       tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-      switchMap(() => this.queryBackend(this.predicate, this.ascending, this.currentSearch))
+      switchMap(() => this.queryBackend(this.predicate, this.ascending))
     );
   }
 
@@ -85,12 +73,6 @@ export class TimeOffRequestComponent implements OnInit {
     const sort = (params.get(SORT) ?? data[DEFAULT_SORT_DATA]).split(',');
     this.predicate = sort[0];
     this.ascending = sort[1] === ASC;
-    if (params.has('search') && params.get('search') !== '') {
-      this.currentSearch = params.get('search') as string;
-      if (TimeOffRequestComponent.NOT_SORTABLE_FIELDS_AFTER_SEARCH.includes(this.predicate)) {
-        this.predicate = '';
-      }
-    }
   }
 
   protected onResponseSuccess(response: EntityArrayResponseType): void {
@@ -106,22 +88,16 @@ export class TimeOffRequestComponent implements OnInit {
     return data ?? [];
   }
 
-  protected queryBackend(predicate?: string, ascending?: boolean, currentSearch?: string): Observable<EntityArrayResponseType> {
+  protected queryBackend(predicate?: string, ascending?: boolean): Observable<EntityArrayResponseType> {
     this.isLoading = true;
-    const queryObject: any = {
-      query: currentSearch,
+    const queryObject = {
       sort: this.getSortQueryParam(predicate, ascending),
     };
-    if (this.currentSearch && this.currentSearch !== '') {
-      return this.timeOffRequestService.search(queryObject).pipe(tap(() => (this.isLoading = false)));
-    } else {
-      return this.timeOffRequestService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
-    }
+    return this.timeOffRequestService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
   }
 
-  protected handleNavigation(predicate?: string, ascending?: boolean, currentSearch?: string): void {
+  protected handleNavigation(predicate?: string, ascending?: boolean): void {
     const queryParamsObj = {
-      search: currentSearch,
       sort: this.getSortQueryParam(predicate, ascending),
     };
 

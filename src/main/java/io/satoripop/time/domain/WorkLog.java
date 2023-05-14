@@ -11,7 +11,6 @@ import javax.validation.constraints.*;
  */
 @Entity
 @Table(name = "work_log")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "worklog")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class WorkLog implements Serializable {
 
@@ -31,9 +30,8 @@ public class WorkLog implements Serializable {
     @Column(name = "date", nullable = false)
     private Instant date;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "workLogs", "timeOffRequests" }, allowSetters = true)
-    private UserConfig user;
+    @Column(name = "user_id")
+    private Long userId;
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "workLogs" }, allowSetters = true)
@@ -80,17 +78,17 @@ public class WorkLog implements Serializable {
         this.date = date;
     }
 
-    public UserConfig getUser() {
-        return this.user;
+    public Long getUserId() {
+        return this.userId;
     }
 
-    public void setUser(UserConfig userConfig) {
-        this.user = userConfig;
-    }
-
-    public WorkLog user(UserConfig userConfig) {
-        this.setUser(userConfig);
+    public WorkLog userId(Long userId) {
+        this.setUserId(userId);
         return this;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Ticket getTicket() {
@@ -132,6 +130,7 @@ public class WorkLog implements Serializable {
             "id=" + getId() +
             ", timeSpent=" + getTimeSpent() +
             ", date='" + getDate() + "'" +
+            ", userId=" + getUserId() +
             "}";
     }
 }

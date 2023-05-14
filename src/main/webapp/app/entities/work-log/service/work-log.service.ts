@@ -7,7 +7,6 @@ import dayjs from 'dayjs/esm';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { Search } from 'app/core/request/request.model';
 import { IWorkLog, NewWorkLog } from '../work-log.model';
 
 export type PartialUpdateWorkLog = Partial<IWorkLog> & Pick<IWorkLog, 'id'>;
@@ -28,7 +27,6 @@ export type EntityArrayResponseType = HttpResponse<IWorkLog[]>;
 @Injectable({ providedIn: 'root' })
 export class WorkLogService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/work-logs');
-  protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/work-logs');
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
@@ -68,13 +66,6 @@ export class WorkLogService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
-  }
-
-  search(req: Search): Observable<EntityArrayResponseType> {
-    const options = createRequestOption(req);
-    return this.http
-      .get<RestWorkLog[]>(this.resourceSearchUrl, { params: options, observe: 'response' })
-      .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
   getWorkLogIdentifier(workLog: Pick<IWorkLog, 'id'>): number {

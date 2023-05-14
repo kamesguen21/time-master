@@ -7,7 +7,6 @@ import dayjs from 'dayjs/esm';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { Search } from 'app/core/request/request.model';
 import { ITimeOffRequest, NewTimeOffRequest } from '../time-off-request.model';
 
 export type PartialUpdateTimeOffRequest = Partial<ITimeOffRequest> & Pick<ITimeOffRequest, 'id'>;
@@ -29,7 +28,6 @@ export type EntityArrayResponseType = HttpResponse<ITimeOffRequest[]>;
 @Injectable({ providedIn: 'root' })
 export class TimeOffRequestService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/time-off-requests');
-  protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/time-off-requests');
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
@@ -69,13 +67,6 @@ export class TimeOffRequestService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
-  }
-
-  search(req: Search): Observable<EntityArrayResponseType> {
-    const options = createRequestOption(req);
-    return this.http
-      .get<RestTimeOffRequest[]>(this.resourceSearchUrl, { params: options, observe: 'response' })
-      .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
   getTimeOffRequestIdentifier(timeOffRequest: Pick<ITimeOffRequest, 'id'>): number {

@@ -8,14 +8,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import io.satoripop.time.IntegrationTest;
 import io.satoripop.time.domain.User;
 import io.satoripop.time.repository.UserRepository;
-import io.satoripop.time.repository.search.UserSearchRepository;
 import io.satoripop.time.security.AuthoritiesConstants;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,30 +32,13 @@ class PublicUserResourceIT {
     @Autowired
     private UserRepository userRepository;
 
-    /**
-     * This repository is mocked in the io.satoripop.time.repository.search test package.
-     *
-     * @see io.satoripop.time.repository.search.UserSearchRepositoryMockConfiguration
-     */
-    @Autowired
-    private UserSearchRepository mockUserSearchRepository;
-
     @Autowired
     private EntityManager em;
-
-    @Autowired
-    private CacheManager cacheManager;
 
     @Autowired
     private MockMvc restUserMockMvc;
 
     private User user;
-
-    @BeforeEach
-    public void setup() {
-        cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).clear();
-        cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).clear();
-    }
 
     @BeforeEach
     public void initTest() {

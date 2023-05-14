@@ -21,18 +21,18 @@ import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
-public class TimeMasterApp {
+public class TimemasterApp {
 
-    private static final Logger log = LoggerFactory.getLogger(TimeMasterApp.class);
+    private static final Logger log = LoggerFactory.getLogger(TimemasterApp.class);
 
     private final Environment env;
 
-    public TimeMasterApp(Environment env) {
+    public TimemasterApp(Environment env) {
         this.env = env;
     }
 
     /**
-     * Initializes timeMaster.
+     * Initializes timemaster.
      * <p>
      * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
      * <p>
@@ -65,7 +65,7 @@ public class TimeMasterApp {
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(TimeMasterApp.class);
+        SpringApplication app = new SpringApplication(TimemasterApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);

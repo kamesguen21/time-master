@@ -1,16 +1,12 @@
 package io.satoripop.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.satoripop.time.IntegrationTest;
 import io.satoripop.time.config.Constants;
 import io.satoripop.time.domain.User;
 import io.satoripop.time.repository.UserRepository;
-import io.satoripop.time.repository.search.UserSearchRepository;
 import io.satoripop.time.service.dto.AdminUserDTO;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.Page;
@@ -54,14 +49,6 @@ class UserServiceIT {
 
     @Autowired
     private UserService userService;
-
-    /**
-     * This repository is mocked in the io.satoripop.time.repository.search test package.
-     *
-     * @see io.satoripop.time.repository.search.UserSearchRepositoryMockConfiguration
-     */
-    @SpyBean
-    private UserSearchRepository spiedUserSearchRepository;
 
     @Autowired
     private AuditingHandler auditingHandler;
@@ -177,9 +164,6 @@ class UserServiceIT {
         userService.removeNotActivatedUsers();
         users = userRepository.findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(threeDaysAgo);
         assertThat(users).isEmpty();
-
-        // Verify Elasticsearch mock
-        verify(spiedUserSearchRepository, times(1)).delete(user);
     }
 
     @Test
@@ -197,8 +181,5 @@ class UserServiceIT {
         userService.removeNotActivatedUsers();
         Optional<User> maybeDbUser = userRepository.findById(dbUser.getId());
         assertThat(maybeDbUser).contains(dbUser);
-
-        // Verify Elasticsearch mock
-        verify(spiedUserSearchRepository, never()).delete(user);
     }
 }

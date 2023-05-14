@@ -1,6 +1,6 @@
 {
-  "applications": "*",
-  "changelogDate": "20230323121858",
+  "applications": ["timemaster"],
+  "changelogDate": "20230514141819",
   "dto": "no",
   "embedded": false,
   "entityTableName": "work_log",
@@ -14,6 +14,10 @@
       "fieldName": "date",
       "fieldType": "Instant",
       "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "userId",
+      "fieldType": "Long"
     }
   ],
   "fluentMethods": true,
@@ -22,12 +26,6 @@
   "pagination": "no",
   "readOnly": false,
   "relationships": [
-    {
-      "otherEntityName": "userConfig",
-      "otherEntityRelationshipName": "workLog",
-      "relationshipName": "user",
-      "relationshipType": "many-to-one"
-    },
     {
       "otherEntityName": "ticket",
       "otherEntityRelationshipName": "workLog",

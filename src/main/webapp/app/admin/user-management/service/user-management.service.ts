@@ -6,6 +6,7 @@ import { ApplicationConfigService } from 'app/core/config/application-config.ser
 import { createRequestOption } from 'app/core/request/request-util';
 import { Pagination } from 'app/core/request/request.model';
 import { IUser } from '../user-management.model';
+import {ITicket} from "../../../entities/ticket/ticket.model";
 
 @Injectable({ providedIn: 'root' })
 export class UserManagementService {
@@ -36,5 +37,12 @@ export class UserManagementService {
 
   authorities(): Observable<string[]> {
     return this.http.get<string[]>(this.applicationConfigService.getEndpointFor('api/authorities'));
+  }
+
+  compareUser(o1: Pick<IUser, 'id'> | null, o2: Pick<IUser, 'id'> | null): boolean {
+    return o1 && o2 ? this.getUserIdentifier(o1) === this.getUserIdentifier(o2) : o1 === o2;
+  }
+  getUserIdentifier(ticket: Pick<IUser, 'id'>): number | null {
+    return ticket.id;
   }
 }

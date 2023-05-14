@@ -1,14 +1,9 @@
 package io.satoripop.time.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
-import io.satoripop.time.repository.search.UserSearchRepository;
 import io.satoripop.time.service.UserService;
 import io.satoripop.time.service.dto.UserDTO;
 import java.util.*;
 import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -32,11 +27,9 @@ public class PublicUserResource {
     private final Logger log = LoggerFactory.getLogger(PublicUserResource.class);
 
     private final UserService userService;
-    private final UserSearchRepository userSearchRepository;
 
-    public PublicUserResource(UserSearchRepository userSearchRepository, UserService userService) {
+    public PublicUserResource(UserService userService) {
         this.userService = userService;
-        this.userSearchRepository = userSearchRepository;
     }
 
     /**
@@ -68,16 +61,5 @@ public class PublicUserResource {
     @GetMapping("/authorities")
     public List<String> getAuthorities() {
         return userService.getAuthorities();
-    }
-
-    /**
-     * {@code SEARCH /_search/users/:query} : search for the User corresponding to the query.
-     *
-     * @param query the query to search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search/users/{query}")
-    public List<UserDTO> search(@PathVariable String query) {
-        return StreamSupport.stream(userSearchRepository.search(query).spliterator(), false).map(UserDTO::new).collect(Collectors.toList());
     }
 }

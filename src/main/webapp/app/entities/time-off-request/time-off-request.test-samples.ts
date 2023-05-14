@@ -4,26 +4,27 @@ import { ITimeOffRequest, NewTimeOffRequest } from './time-off-request.model';
 
 export const sampleWithRequiredData: ITimeOffRequest = {
   id: 43961,
-  startDate: dayjs('2023-03-22T22:15'),
-  endDate: dayjs('2023-03-23T05:55'),
+  startDate: dayjs('2023-05-14T00:15'),
+  endDate: dayjs('2023-05-14T07:54'),
 };
 
 export const sampleWithPartialData: ITimeOffRequest = {
-  id: 24077,
-  startDate: dayjs('2023-03-22T18:00'),
-  endDate: dayjs('2023-03-22T14:33'),
+  id: 76272,
+  startDate: dayjs('2023-05-13T16:32'),
+  endDate: dayjs('2023-05-14T11:42'),
 };
 
 export const sampleWithFullData: ITimeOffRequest = {
-  id: 10834,
-  startDate: dayjs('2023-03-23T05:21'),
-  endDate: dayjs('2023-03-22T22:39'),
-  status: 'transmit Frozen indexing',
+  id: 28956,
+  startDate: dayjs('2023-05-14T00:38'),
+  endDate: dayjs('2023-05-13T21:42'),
+  status: 'haptic Response Cambridgeshire',
+  userId: 887,
 };
 
 export const sampleWithNewData: NewTimeOffRequest = {
-  startDate: dayjs('2023-03-22T21:57'),
-  endDate: dayjs('2023-03-23T12:06'),
+  startDate: dayjs('2023-05-14T10:48'),
+  endDate: dayjs('2023-05-13T19:44'),
   id: null,
 };
 

@@ -26,11 +26,9 @@
         <dd>
           <span>{{ timeOffRequest.status }}</span>
         </dd>
-        <dt><span>User</span></dt>
+        <dt><span>User Id</span></dt>
         <dd>
-          <div *ngIf="timeOffRequest.user">
-            <a [routerLink]="['/user-config', timeOffRequest.user.id, 'view']">{{ timeOffRequest.user.id }}</a>
-          </div>
+          <span>{{ timeOffRequest.userId }}</span>
         </dd>
       </dl>
 

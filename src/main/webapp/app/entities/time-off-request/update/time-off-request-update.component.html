@@ -59,13 +59,8 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" for="field_user">User</label>
-          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUserConfig">
-            <option [ngValue]="null"></option>
-            <option [ngValue]="userConfigOption" *ngFor="let userConfigOption of userConfigsSharedCollection">
-              {{ userConfigOption.id }}
-            </option>
-          </select>
+          <label class="form-label" for="field_userId">User Id</label>
+          <input type="number" class="form-control" name="userId" id="field_userId" data-cy="userId" formControlName="userId" />
         </div>
       </div>
 

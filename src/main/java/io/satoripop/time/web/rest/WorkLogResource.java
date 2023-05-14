@@ -1,18 +1,13 @@
 package io.satoripop.time.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
 import io.satoripop.time.domain.WorkLog;
 import io.satoripop.time.repository.WorkLogRepository;
-import io.satoripop.time.repository.search.WorkLogSearchRepository;
 import io.satoripop.time.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -41,11 +36,8 @@ public class WorkLogResource {
 
     private final WorkLogRepository workLogRepository;
 
-    private final WorkLogSearchRepository workLogSearchRepository;
-
-    public WorkLogResource(WorkLogRepository workLogRepository, WorkLogSearchRepository workLogSearchRepository) {
+    public WorkLogResource(WorkLogRepository workLogRepository) {
         this.workLogRepository = workLogRepository;
-        this.workLogSearchRepository = workLogSearchRepository;
     }
 
     /**
@@ -62,7 +54,6 @@ public class WorkLogResource {
             throw new BadRequestAlertException("A new workLog cannot already have an ID", ENTITY_NAME, "idexists");
         }
         WorkLog result = workLogRepository.save(workLog);
-        workLogSearchRepository.index(result);
         return ResponseEntity
             .created(new URI("/api/work-logs/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -97,7 +88,6 @@ public class WorkLogResource {
         }
 
         WorkLog result = workLogRepository.save(workLog);
-        workLogSearchRepository.index(result);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, workLog.getId().toString()))
@@ -141,15 +131,13 @@ public class WorkLogResource {
                 if (workLog.getDate() != null) {
                     existingWorkLog.setDate(workLog.getDate());
                 }
+                if (workLog.getUserId() != null) {
+                    existingWorkLog.setUserId(workLog.getUserId());
+                }
 
                 return existingWorkLog;
             })
-            .map(workLogRepository::save)
-            .map(savedWorkLog -> {
-                workLogSearchRepository.save(savedWorkLog);
-
-                return savedWorkLog;
-            });
+            .map(workLogRepository::save);
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -191,23 +179,9 @@ public class WorkLogResource {
     public ResponseEntity<Void> deleteWorkLog(@PathVariable Long id) {
         log.debug("REST request to delete WorkLog : {}", id);
         workLogRepository.deleteById(id);
-        workLogSearchRepository.deleteById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /_search/work-logs?query=:query} : search for the workLog corresponding
-     * to the query.
-     *
-     * @param query the query of the workLog search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search/work-logs")
-    public List<WorkLog> searchWorkLogs(@RequestParam String query) {
-        log.debug("REST request to search WorkLogs for query {}", query);
-        return StreamSupport.stream(workLogSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
     }
 }

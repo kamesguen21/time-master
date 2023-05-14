@@ -1,18 +1,13 @@
 package io.satoripop.time.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
 import io.satoripop.time.domain.TimeOffRequest;
 import io.satoripop.time.repository.TimeOffRequestRepository;
-import io.satoripop.time.repository.search.TimeOffRequestSearchRepository;
 import io.satoripop.time.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -41,14 +36,8 @@ public class TimeOffRequestResource {
 
     private final TimeOffRequestRepository timeOffRequestRepository;
 
-    private final TimeOffRequestSearchRepository timeOffRequestSearchRepository;
-
-    public TimeOffRequestResource(
-        TimeOffRequestRepository timeOffRequestRepository,
-        TimeOffRequestSearchRepository timeOffRequestSearchRepository
-    ) {
+    public TimeOffRequestResource(TimeOffRequestRepository timeOffRequestRepository) {
         this.timeOffRequestRepository = timeOffRequestRepository;
-        this.timeOffRequestSearchRepository = timeOffRequestSearchRepository;
     }
 
     /**
@@ -66,7 +55,6 @@ public class TimeOffRequestResource {
             throw new BadRequestAlertException("A new timeOffRequest cannot already have an ID", ENTITY_NAME, "idexists");
         }
         TimeOffRequest result = timeOffRequestRepository.save(timeOffRequest);
-        timeOffRequestSearchRepository.index(result);
         return ResponseEntity
             .created(new URI("/api/time-off-requests/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -101,7 +89,6 @@ public class TimeOffRequestResource {
         }
 
         TimeOffRequest result = timeOffRequestRepository.save(timeOffRequest);
-        timeOffRequestSearchRepository.index(result);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, timeOffRequest.getId().toString()))
@@ -148,15 +135,13 @@ public class TimeOffRequestResource {
                 if (timeOffRequest.getStatus() != null) {
                     existingTimeOffRequest.setStatus(timeOffRequest.getStatus());
                 }
+                if (timeOffRequest.getUserId() != null) {
+                    existingTimeOffRequest.setUserId(timeOffRequest.getUserId());
+                }
 
                 return existingTimeOffRequest;
             })
-            .map(timeOffRequestRepository::save)
-            .map(savedTimeOffRequest -> {
-                timeOffRequestSearchRepository.save(savedTimeOffRequest);
-
-                return savedTimeOffRequest;
-            });
+            .map(timeOffRequestRepository::save);
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -198,23 +183,9 @@ public class TimeOffRequestResource {
     public ResponseEntity<Void> deleteTimeOffRequest(@PathVariable Long id) {
         log.debug("REST request to delete TimeOffRequest : {}", id);
         timeOffRequestRepository.deleteById(id);
-        timeOffRequestSearchRepository.deleteById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /_search/time-off-requests?query=:query} : search for the timeOffRequest corresponding
-     * to the query.
-     *
-     * @param query the query of the timeOffRequest search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search/time-off-requests")
-    public List<TimeOffRequest> searchTimeOffRequests(@RequestParam String query) {
-        log.debug("REST request to search TimeOffRequests for query {}", query);
-        return StreamSupport.stream(timeOffRequestSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
     }
 }

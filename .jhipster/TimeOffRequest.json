@@ -1,6 +1,6 @@
 {
-  "applications": "*",
-  "changelogDate": "20230323121859",
+  "applications": ["timemaster"],
+  "changelogDate": "20230514141818",
   "dto": "no",
   "embedded": false,
   "entityTableName": "time_off_request",
@@ -18,6 +18,10 @@
     {
       "fieldName": "status",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "userId",
+      "fieldType": "Long"
     }
   ],
   "fluentMethods": true,
@@ -25,13 +29,6 @@
   "name": "TimeOffRequest",
   "pagination": "no",
   "readOnly": false,
-  "relationships": [
-    {
-      "otherEntityName": "userConfig",
-      "otherEntityRelationshipName": "timeOffRequest",
-      "relationshipName": "user",
-      "relationshipType": "many-to-one"
-    }
-  ],
+  "relationships": [],
   "service": "no"
 }

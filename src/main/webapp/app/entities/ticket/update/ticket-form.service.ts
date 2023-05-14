@@ -18,9 +18,10 @@ type TicketFormDefaults = Pick<NewTicket, 'id'>;
 
 type TicketFormGroupContent = {
   id: FormControl<ITicket['id'] | NewTicket['id']>;
-  key: FormControl<ITicket['key']>;
+  jiraKey: FormControl<ITicket['jiraKey']>;
   summary: FormControl<ITicket['summary']>;
   description: FormControl<ITicket['description']>;
+  userId: FormControl<ITicket['userId']>;
 };
 
 export type TicketFormGroup = FormGroup<TicketFormGroupContent>;
@@ -40,13 +41,14 @@ export class TicketFormService {
           validators: [Validators.required],
         }
       ),
-      key: new FormControl(ticketRawValue.key, {
+      jiraKey: new FormControl(ticketRawValue.jiraKey, {
         validators: [Validators.required],
       }),
       summary: new FormControl(ticketRawValue.summary, {
         validators: [Validators.required],
       }),
       description: new FormControl(ticketRawValue.description),
+      userId: new FormControl(ticketRawValue.userId),
     });
   }
 

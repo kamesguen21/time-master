@@ -20,9 +20,10 @@ describe('Ticket Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            key: expect.any(Object),
+            jiraKey: expect.any(Object),
             summary: expect.any(Object),
             description: expect.any(Object),
+            userId: expect.any(Object),
           })
         );
       });
@@ -33,9 +34,10 @@ describe('Ticket Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            key: expect.any(Object),
+            jiraKey: expect.any(Object),
             summary: expect.any(Object),
             description: expect.any(Object),
+            userId: expect.any(Object),
           })
         );
       });

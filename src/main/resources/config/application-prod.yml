@@ -33,16 +33,14 @@ spring:
       enabled: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/timeMaster
-    username: timeMaster
+    url: jdbc:postgresql://localhost:5432/timemaster
+    username: timemaster
     password:
     hikari:
       poolName: Hikari
       auto-commit: false
   jpa:
     database-platform: tech.jhipster.domain.util.FixedPostgreSQL10Dialect
-  elasticsearch:
-    uris: http://localhost:9200
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: prod
@@ -91,10 +89,6 @@ jhipster:
   http:
     cache: # Used by the CachingHttpHeadersFilter
       timeToLiveInDays: 1461
-  cache: # Cache configuration
-    ehcache: # Ehcache configuration
-      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
-      max-entries: 1000 # Number of objects in each cache entry
   security:
     authentication:
       jwt:
@@ -103,7 +97,7 @@ jhipster:
         # - In the JHipster Registry (which includes a Spring Cloud Config server)
         # - In a separate `application-prod.yml` file, in the same folder as your executable JAR file
         # - In the `JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET` environment variable
-        base64-secret: N2E3MGJhNTQ2MTAyMGUyNmY1NTExNzZjMTEyZmRlNjllMjEzNTc4ZDY1YTZkMDczOGY4YWU3NjFjZjU3NGE4NWI1MzFlNWQ3NzVkODRjODVmOTNiYzIzZjg1ZjYxNzQzNThjZmNlNDBjZjJkYTJiMDdiNzZlNTIwY2M3ZjA4MGM=
+        base64-secret: ZmVhMGZlMzgyOWM5NWI1MzU0NGI3MGVmY2NmYzRjNzM5NWNjZDFhODFlOGNjZWQ3M2VjNTUxMmU0YWEyMzliOGU2YzFmY2NlMTZiOTZlZTdhZWYwODg0ZWVjZGZlODgxNTVhYTM5MGFlNTdhN2YwNzc4NTA5YjBlYTYyNDE0Nzc=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000

@@ -12,10 +12,10 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" for="field_key">Key</label>
-          <input type="text" class="form-control" name="key" id="field_key" data-cy="key" formControlName="key" />
-          <div *ngIf="editForm.get('key')!.invalid && (editForm.get('key')!.dirty || editForm.get('key')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('key')?.errors?.required"> This field is required. </small>
+          <label class="form-label" for="field_jiraKey">Jira Key</label>
+          <input type="text" class="form-control" name="jiraKey" id="field_jiraKey" data-cy="jiraKey" formControlName="jiraKey" />
+          <div *ngIf="editForm.get('jiraKey')!.invalid && (editForm.get('jiraKey')!.dirty || editForm.get('jiraKey')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('jiraKey')?.errors?.required"> This field is required. </small>
           </div>
         </div>
 
@@ -37,6 +37,21 @@
             data-cy="description"
             formControlName="description"
           />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_userId">User Id</label>
+          <select
+            class="form-control"
+            id="field_userId"
+            data-cy="userId"
+            name="ticket"
+            formControlName="userId"
+            [compareWith]="compareUser"
+          >
+            <option [ngValue]="null"></option>
+            <option [ngValue]="userOption.id" *ngFor="let userOption of users">{{ userOption.login }}</option>
+          </select>
         </div>
       </div>
 

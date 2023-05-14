@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "time-master": {
+    "timemaster": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -76,15 +76,15 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "time-master:build:development",
+            "browserTarget": "timemaster:build:development",
             "port": 4200
           },
           "configurations": {
             "production": {
-              "browserTarget": "time-master:build:production"
+              "browserTarget": "timemaster:build:production"
             },
             "development": {
-              "browserTarget": "time-master:build:development"
+              "browserTarget": "timemaster:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -105,6 +105,6 @@
       "environment": "all"
     },
     "packageManager": "npm",
-    "analytics": "eb7f45c6-c8b2-4ba6-8850-fb492958a6ec"
+    "analytics": false
   }
 }

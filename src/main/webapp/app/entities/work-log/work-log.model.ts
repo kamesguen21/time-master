@@ -1,12 +1,11 @@
 import dayjs from 'dayjs/esm';
-import { IUserConfig } from 'app/entities/user-config/user-config.model';
 import { ITicket } from 'app/entities/ticket/ticket.model';
 
 export interface IWorkLog {
   id: number;
   timeSpent?: number | null;
   date?: dayjs.Dayjs | null;
-  user?: Pick<IUserConfig, 'id'> | null;
+  userId?: number | null;
   ticket?: Pick<ITicket, 'id'> | null;
 }
 

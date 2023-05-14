@@ -9,7 +9,6 @@ import io.satoripop.time.IntegrationTest;
 import io.satoripop.time.domain.Authority;
 import io.satoripop.time.domain.User;
 import io.satoripop.time.repository.UserRepository;
-import io.satoripop.time.repository.search.UserSearchRepository;
 import io.satoripop.time.security.AuthoritiesConstants;
 import io.satoripop.time.service.dto.AdminUserDTO;
 import io.satoripop.time.service.mapper.UserMapper;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,27 +62,15 @@ class UserResourceIT {
     private UserRepository userRepository;
 
     @Autowired
-    private UserSearchRepository userSearchRepository;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Autowired
     private EntityManager em;
 
     @Autowired
-    private CacheManager cacheManager;
-
-    @Autowired
     private MockMvc restUserMockMvc;
 
     private User user;
-
-    @BeforeEach
-    public void setup() {
-        cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).clear();
-        cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).clear();
-    }
 
     /**
      * Create a User.
@@ -155,8 +141,6 @@ class UserResourceIT {
             assertThat(testUser.getImageUrl()).isEqualTo(DEFAULT_IMAGEURL);
             assertThat(testUser.getLangKey()).isEqualTo(DEFAULT_LANGKEY);
         });
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -185,8 +169,6 @@ class UserResourceIT {
 
         // Validate the User in the database
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeCreate));
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -194,7 +176,6 @@ class UserResourceIT {
     void createUserWithExistingLogin() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-        userSearchRepository.save(user);
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
@@ -217,8 +198,6 @@ class UserResourceIT {
 
         // Validate the User in the database
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeCreate));
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -226,7 +205,6 @@ class UserResourceIT {
     void createUserWithExistingEmail() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-        userSearchRepository.save(user);
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
@@ -249,8 +227,6 @@ class UserResourceIT {
 
         // Validate the User in the database
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeCreate));
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -270,8 +246,6 @@ class UserResourceIT {
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
             .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGEURL)))
             .andExpect(jsonPath("$.[*].langKey").value(hasItem(DEFAULT_LANGKEY)));
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -279,10 +253,6 @@ class UserResourceIT {
     void getUser() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-
-        userSearchRepository.save(user);
-
-        assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
 
         // Get the user
         restUserMockMvc
@@ -295,10 +265,6 @@ class UserResourceIT {
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
             .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGEURL))
             .andExpect(jsonPath("$.langKey").value(DEFAULT_LANGKEY));
-
-        assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNotNull();
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -349,8 +315,6 @@ class UserResourceIT {
             assertThat(testUser.getImageUrl()).isEqualTo(UPDATED_IMAGEURL);
             assertThat(testUser.getLangKey()).isEqualTo(UPDATED_LANGKEY);
         });
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -396,8 +360,6 @@ class UserResourceIT {
             assertThat(testUser.getImageUrl()).isEqualTo(UPDATED_IMAGEURL);
             assertThat(testUser.getLangKey()).isEqualTo(UPDATED_LANGKEY);
         });
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -405,7 +367,6 @@ class UserResourceIT {
     void updateUserExistingEmail() throws Exception {
         // Initialize the database with 2 users
         userRepository.saveAndFlush(user);
-        userSearchRepository.save(user);
 
         User anotherUser = new User();
         anotherUser.setLogin("jhipster");
@@ -417,7 +378,6 @@ class UserResourceIT {
         anotherUser.setImageUrl("");
         anotherUser.setLangKey("en");
         userRepository.saveAndFlush(anotherUser);
-        userSearchRepository.save(anotherUser);
 
         // Update the user
         User updatedUser = userRepository.findById(user.getId()).get();
@@ -443,8 +403,6 @@ class UserResourceIT {
                 put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(managedUserVM))
             )
             .andExpect(status().isBadRequest());
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -452,7 +410,6 @@ class UserResourceIT {
     void updateUserExistingLogin() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-        userSearchRepository.save(user);
 
         User anotherUser = new User();
         anotherUser.setLogin("jhipster");
@@ -464,7 +421,6 @@ class UserResourceIT {
         anotherUser.setImageUrl("");
         anotherUser.setLangKey("en");
         userRepository.saveAndFlush(anotherUser);
-        userSearchRepository.save(anotherUser);
 
         // Update the user
         User updatedUser = userRepository.findById(user.getId()).get();
@@ -490,8 +446,6 @@ class UserResourceIT {
                 put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(managedUserVM))
             )
             .andExpect(status().isBadRequest());
-
-        userSearchRepository.deleteAll();
     }
 
     @Test
@@ -505,8 +459,6 @@ class UserResourceIT {
         restUserMockMvc
             .perform(delete("/api/admin/users/{login}", user.getLogin()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
-
-        assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin())).isNull();
 
         // Validate the database is empty
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeDelete - 1));

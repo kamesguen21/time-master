@@ -7,8 +7,6 @@ import { finalize, map } from 'rxjs/operators';
 import { WorkLogFormService, WorkLogFormGroup } from './work-log-form.service';
 import { IWorkLog } from '../work-log.model';
 import { WorkLogService } from '../service/work-log.service';
-import { IUserConfig } from 'app/entities/user-config/user-config.model';
-import { UserConfigService } from 'app/entities/user-config/service/user-config.service';
 import { ITicket } from 'app/entities/ticket/ticket.model';
 import { TicketService } from 'app/entities/ticket/service/ticket.service';
 
@@ -20,7 +18,6 @@ export class WorkLogUpdateComponent implements OnInit {
   isSaving = false;
   workLog: IWorkLog | null = null;
 
-  userConfigsSharedCollection: IUserConfig[] = [];
   ticketsSharedCollection: ITicket[] = [];
 
   editForm: WorkLogFormGroup = this.workLogFormService.createWorkLogFormGroup();
@@ -28,12 +25,9 @@ export class WorkLogUpdateComponent implements OnInit {
   constructor(
     protected workLogService: WorkLogService,
     protected workLogFormService: WorkLogFormService,
-    protected userConfigService: UserConfigService,
     protected ticketService: TicketService,
     protected activatedRoute: ActivatedRoute
   ) {}
-
-  compareUserConfig = (o1: IUserConfig | null, o2: IUserConfig | null): boolean => this.userConfigService.compareUserConfig(o1, o2);
 
   compareTicket = (o1: ITicket | null, o2: ITicket | null): boolean => this.ticketService.compareTicket(o1, o2);
 
@@ -85,24 +79,10 @@ export class WorkLogUpdateComponent implements OnInit {
     this.workLog = workLog;
     this.workLogFormService.resetForm(this.editForm, workLog);
 
-    this.userConfigsSharedCollection = this.userConfigService.addUserConfigToCollectionIfMissing<IUserConfig>(
-      this.userConfigsSharedCollection,
-      workLog.user
-    );
     this.ticketsSharedCollection = this.ticketService.addTicketToCollectionIfMissing<ITicket>(this.ticketsSharedCollection, workLog.ticket);
   }
 
   protected loadRelationshipsOptions(): void {
-    this.userConfigService
-      .query()
-      .pipe(map((res: HttpResponse<IUserConfig[]>) => res.body ?? []))
-      .pipe(
-        map((userConfigs: IUserConfig[]) =>
-          this.userConfigService.addUserConfigToCollectionIfMissing<IUserConfig>(userConfigs, this.workLog?.user)
-        )
-      )
-      .subscribe((userConfigs: IUserConfig[]) => (this.userConfigsSharedCollection = userConfigs));
-
     this.ticketService
       .query()
       .pipe(map((res: HttpResponse<ITicket[]>) => res.body ?? []))

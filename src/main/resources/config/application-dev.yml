@@ -20,11 +20,6 @@ logging:
     org.hibernate.SQL: DEBUG
     io.satoripop.time: DEBUG
 
-management:
-  health:
-    elasticsearch:
-      enabled: false
-
 spring:
   devtools:
     restart:
@@ -38,7 +33,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:h2:file:./target/h2db/db/timemaster;DB_CLOSE_DELAY=-1;MODE=LEGACY
-    username: timeMaster
+    username: timemaster
     password:
     hikari:
       poolName: Hikari
@@ -48,8 +43,6 @@ spring:
       # disable spring boot built-in h2-console since we start it manually with correct configuration
       enabled: false
   jpa:
-  elasticsearch:
-    uris: http://localhost:9200
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
@@ -73,10 +66,6 @@ server:
 # ===================================================================
 
 jhipster:
-  cache: # Cache configuration
-    ehcache: # Ehcache configuration
-      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
-      max-entries: 100 # Number of objects in each cache entry
   # CORS is only enabled by default with the "dev" profile
   cors:
     # Allow Ionic for JHipster by default (* no longer allowed in Spring Boot 2.4+)
@@ -92,7 +81,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
-        base64-secret: N2E3MGJhNTQ2MTAyMGUyNmY1NTExNzZjMTEyZmRlNjllMjEzNTc4ZDY1YTZkMDczOGY4YWU3NjFjZjU3NGE4NWI1MzFlNWQ3NzVkODRjODVmOTNiYzIzZjg1ZjYxNzQzNThjZmNlNDBjZjJkYTJiMDdiNzZlNTIwY2M3ZjA4MGM=
+        base64-secret: ZmVhMGZlMzgyOWM5NWI1MzU0NGI3MGVmY2NmYzRjNzM5NWNjZDFhODFlOGNjZWQ3M2VjNTUxMmU0YWEyMzliOGU2YzFmY2NlMTZiOTZlZTdhZWYwODg0ZWVjZGZlODgxNTVhYTM5MGFlNTdhN2YwNzc4NTA5YjBlYTYyNDE0Nzc=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000

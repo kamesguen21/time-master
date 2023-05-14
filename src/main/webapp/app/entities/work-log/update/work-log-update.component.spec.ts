@@ -9,8 +9,6 @@ import { of, Subject, from } from 'rxjs';
 import { WorkLogFormService } from './work-log-form.service';
 import { WorkLogService } from '../service/work-log.service';
 import { IWorkLog } from '../work-log.model';
-import { IUserConfig } from 'app/entities/user-config/user-config.model';
-import { UserConfigService } from 'app/entities/user-config/service/user-config.service';
 import { ITicket } from 'app/entities/ticket/ticket.model';
 import { TicketService } from 'app/entities/ticket/service/ticket.service';
 
@@ -22,7 +20,6 @@ describe('WorkLog Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let workLogFormService: WorkLogFormService;
   let workLogService: WorkLogService;
-  let userConfigService: UserConfigService;
   let ticketService: TicketService;
 
   beforeEach(() => {
@@ -46,35 +43,12 @@ describe('WorkLog Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     workLogFormService = TestBed.inject(WorkLogFormService);
     workLogService = TestBed.inject(WorkLogService);
-    userConfigService = TestBed.inject(UserConfigService);
     ticketService = TestBed.inject(TicketService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
-    it('Should call UserConfig query and add missing value', () => {
-      const workLog: IWorkLog = { id: 456 };
-      const user: IUserConfig = { id: 70270 };
-      workLog.user = user;
-
-      const userConfigCollection: IUserConfig[] = [{ id: 15709 }];
-      jest.spyOn(userConfigService, 'query').mockReturnValue(of(new HttpResponse({ body: userConfigCollection })));
-      const additionalUserConfigs = [user];
-      const expectedCollection: IUserConfig[] = [...additionalUserConfigs, ...userConfigCollection];
-      jest.spyOn(userConfigService, 'addUserConfigToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ workLog });
-      comp.ngOnInit();
-
-      expect(userConfigService.query).toHaveBeenCalled();
-      expect(userConfigService.addUserConfigToCollectionIfMissing).toHaveBeenCalledWith(
-        userConfigCollection,
-        ...additionalUserConfigs.map(expect.objectContaining)
-      );
-      expect(comp.userConfigsSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should call Ticket query and add missing value', () => {
       const workLog: IWorkLog = { id: 456 };
       const ticket: ITicket = { id: 97870 };
@@ -99,15 +73,12 @@ describe('WorkLog Management Update Component', () => {
 
     it('Should update editForm', () => {
       const workLog: IWorkLog = { id: 456 };
-      const user: IUserConfig = { id: 93049 };
-      workLog.user = user;
       const ticket: ITicket = { id: 2238 };
       workLog.ticket = ticket;
 
       activatedRoute.data = of({ workLog });
       comp.ngOnInit();
 
-      expect(comp.userConfigsSharedCollection).toContain(user);
       expect(comp.ticketsSharedCollection).toContain(ticket);
       expect(comp.workLog).toEqual(workLog);
     });
@@ -182,16 +153,6 @@ describe('WorkLog Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
-    describe('compareUserConfig', () => {
-      it('Should forward to userConfigService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(userConfigService, 'compareUserConfig');
-        comp.compareUserConfig(entity, entity2);
-        expect(userConfigService.compareUserConfig).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
     describe('compareTicket', () => {
       it('Should forward to ticketService', () => {
         const entity = { id: 123 };

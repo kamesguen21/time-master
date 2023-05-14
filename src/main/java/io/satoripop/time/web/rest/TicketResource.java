@@ -1,18 +1,13 @@
 package io.satoripop.time.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
 import io.satoripop.time.domain.Ticket;
 import io.satoripop.time.repository.TicketRepository;
-import io.satoripop.time.repository.search.TicketSearchRepository;
 import io.satoripop.time.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -41,11 +36,8 @@ public class TicketResource {
 
     private final TicketRepository ticketRepository;
 
-    private final TicketSearchRepository ticketSearchRepository;
-
-    public TicketResource(TicketRepository ticketRepository, TicketSearchRepository ticketSearchRepository) {
+    public TicketResource(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
-        this.ticketSearchRepository = ticketSearchRepository;
     }
 
     /**
@@ -62,7 +54,6 @@ public class TicketResource {
             throw new BadRequestAlertException("A new ticket cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Ticket result = ticketRepository.save(ticket);
-        ticketSearchRepository.index(result);
         return ResponseEntity
             .created(new URI("/api/tickets/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -97,7 +88,6 @@ public class TicketResource {
         }
 
         Ticket result = ticketRepository.save(ticket);
-        ticketSearchRepository.index(result);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, ticket.getId().toString()))
@@ -135,8 +125,8 @@ public class TicketResource {
         Optional<Ticket> result = ticketRepository
             .findById(ticket.getId())
             .map(existingTicket -> {
-                if (ticket.getKey() != null) {
-                    existingTicket.setKey(ticket.getKey());
+                if (ticket.getJiraKey() != null) {
+                    existingTicket.setJiraKey(ticket.getJiraKey());
                 }
                 if (ticket.getSummary() != null) {
                     existingTicket.setSummary(ticket.getSummary());
@@ -144,15 +134,13 @@ public class TicketResource {
                 if (ticket.getDescription() != null) {
                     existingTicket.setDescription(ticket.getDescription());
                 }
+                if (ticket.getUserId() != null) {
+                    existingTicket.setUserId(ticket.getUserId());
+                }
 
                 return existingTicket;
             })
-            .map(ticketRepository::save)
-            .map(savedTicket -> {
-                ticketSearchRepository.save(savedTicket);
-
-                return savedTicket;
-            });
+            .map(ticketRepository::save);
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -194,23 +182,9 @@ public class TicketResource {
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         log.debug("REST request to delete Ticket : {}", id);
         ticketRepository.deleteById(id);
-        ticketSearchRepository.deleteById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * {@code SEARCH  /_search/tickets?query=:query} : search for the ticket corresponding
-     * to the query.
-     *
-     * @param query the query of the ticket search.
-     * @return the result of the search.
-     */
-    @GetMapping("/_search/tickets")
-    public List<Ticket> searchTickets(@RequestParam String query) {
-        log.debug("REST request to search Tickets for query {}", query);
-        return StreamSupport.stream(ticketSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
     }
 }

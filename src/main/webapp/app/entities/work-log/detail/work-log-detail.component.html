@@ -22,11 +22,9 @@
         <dd>
           <span>{{ workLog.date | formatMediumDatetime }}</span>
         </dd>
-        <dt><span>User</span></dt>
+        <dt><span>User Id</span></dt>
         <dd>
-          <div *ngIf="workLog.user">
-            <a [routerLink]="['/user-config', workLog.user.id, 'view']">{{ workLog.user.id }}</a>
-          </div>
+          <span>{{ workLog.userId }}</span>
         </dd>
         <dt><span>Ticket</span></dt>
         <dd>
