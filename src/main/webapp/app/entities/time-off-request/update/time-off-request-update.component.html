@@ -55,7 +55,12 @@
 
         <div class="row mb-3">
           <label class="form-label" for="field_status">Status</label>
-          <input type="text" class="form-control" name="status" id="field_status" data-cy="status" formControlName="status" />
+          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let timeOffRequestStatus of timeOffRequestStatusValues" [value]="timeOffRequestStatus">
+              timeOffRequestStatus
+            </option>
+          </select>
         </div>
 
         <div class="row mb-3">

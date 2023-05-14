@@ -1,7 +1,7 @@
 {
   "applications": ["timemaster"],
   "changelogDate": "20230514141818",
-  "dto": "no",
+  "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "time_off_request",
   "fields": [
@@ -17,18 +17,23 @@
     },
     {
       "fieldName": "status",
-      "fieldType": "String"
+      "fieldType": "TimeOffRequestStatus",
+      "fieldValues": "PENDING,APPROVED,REJECTED"
     },
     {
       "fieldName": "userId",
       "fieldType": "Long"
+    },
+    {
+      "fieldName": "leaveReason",
+      "fieldType": "String"
     }
   ],
   "fluentMethods": true,
-  "jpaMetamodelFiltering": false,
+  "jpaMetamodelFiltering": true,
   "name": "TimeOffRequest",
-  "pagination": "no",
+  "pagination": "pagination",
   "readOnly": false,
   "relationships": [],
-  "service": "no"
+  "service": "serviceImpl"
 }

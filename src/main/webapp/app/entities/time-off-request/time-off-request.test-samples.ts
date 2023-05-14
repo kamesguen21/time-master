@@ -1,5 +1,7 @@
 import dayjs from 'dayjs/esm';
 
+import { TimeOffRequestStatus } from 'app/entities/enumerations/time-off-request-status.model';
+
 import { ITimeOffRequest, NewTimeOffRequest } from './time-off-request.model';
 
 export const sampleWithRequiredData: ITimeOffRequest = {
@@ -18,13 +20,13 @@ export const sampleWithFullData: ITimeOffRequest = {
   id: 28956,
   startDate: dayjs('2023-05-14T00:38'),
   endDate: dayjs('2023-05-13T21:42'),
-  status: 'haptic Response Cambridgeshire',
-  userId: 887,
+  status: TimeOffRequestStatus['REJECTED'],
+  userId: 78329,
 };
 
 export const sampleWithNewData: NewTimeOffRequest = {
-  startDate: dayjs('2023-05-14T10:48'),
-  endDate: dayjs('2023-05-13T19:44'),
+  startDate: dayjs('2023-05-14T01:13'),
+  endDate: dayjs('2023-05-14T10:56'),
   id: null,
 };
 

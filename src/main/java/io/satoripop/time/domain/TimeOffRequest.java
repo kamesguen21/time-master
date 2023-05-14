@@ -1,5 +1,6 @@
 package io.satoripop.time.domain;
 
+import io.satoripop.time.domain.enumeration.TimeOffRequestStatus;
 import java.io.Serializable;
 import java.time.Instant;
 import javax.persistence.*;
@@ -29,8 +30,9 @@ public class TimeOffRequest implements Serializable {
     @Column(name = "end_date", nullable = false)
     private Instant endDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private TimeOffRequestStatus status;
 
     @Column(name = "user_id")
     private Long userId;
@@ -76,16 +78,16 @@ public class TimeOffRequest implements Serializable {
         this.endDate = endDate;
     }
 
-    public String getStatus() {
+    public TimeOffRequestStatus getStatus() {
         return this.status;
     }
 
-    public TimeOffRequest status(String status) {
+    public TimeOffRequest status(TimeOffRequestStatus status) {
         this.setStatus(status);
         return this;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TimeOffRequestStatus status) {
         this.status = status;
     }
 

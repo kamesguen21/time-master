@@ -1,1 +1,11 @@
-id;jira_key;summary;description;user_id
+id;jira_key;summary;description;user_id;status
+1;out-of-the-box Grocery SMTP;bus;Granite;41034;DONE
+2;Industrial SDD;Danish quantifying invoice;Plastic Connecticut;26359;TO_REVIEW
+3;Administrator Fish;frame bypass;systems Toys;12210;TO_REVIEW
+4;maroon;Investment archive;driver;18146;PENDING
+5;Investment quantify;Hampshire;Generic wireless;9217;DONE
+6;matrix Balanced Small;Lead Colombian Multi-layered;Berkshire payment expedite;28411;IN_PROGRESS
+7;matrix harness;Account;Account state Checking;31750;IN_PROGRESS
+8;Avon Marketing attitude-oriented;Data Beauty;Sausages;20003;DONE
+9;virtual bluetooth XML;bus Baby;Shoes Cotton Assurance;8653;IN_PROGRESS
+10;Movies calculating Plastic;functionalities Cheese magenta;Kids Extended;48676;IN_PROGRESS

@@ -24,6 +24,7 @@ describe('Ticket Form Service', () => {
             summary: expect.any(Object),
             description: expect.any(Object),
             userId: expect.any(Object),
+            status: expect.any(Object),
           })
         );
       });
@@ -38,6 +39,7 @@ describe('Ticket Form Service', () => {
             summary: expect.any(Object),
             description: expect.any(Object),
             userId: expect.any(Object),
+            status: expect.any(Object),
           })
         );
       });

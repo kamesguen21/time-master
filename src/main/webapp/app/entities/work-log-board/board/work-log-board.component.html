@@ -1,0 +1,57 @@
+<h1 class="header-text">My Board</h1>
+<div class="root">
+  <div class="board">
+    <div class="board-wrapper">
+      <div class="board-columns">
+        <div cdkDropList cdkDropListOrientation="horizontal" class="board-columns" (cdkDropListDropped)="dropGrid($event)">
+          <div cdkDragLockAxis="x" class="board-column" *ngFor="let column of board.columns" cdkDrag>
+            <div class="column-title" cdkDragHandle>
+              <th
+                class="e-header-cells e-toggle-header e-template snipcss-l77Wr"
+                data-role="kanban-column"
+                data-key="Open"
+                aria-expanded="true"
+                style="width: 20rem"
+              >
+                <div class="e-header-wrap">
+                  <div class="e-header-title snipcss0-0-0-1">
+                    <div class="header-template-wrap snipcss0-1-1-2">
+                      <div class="header-icon e-icons Open snipcss0-2-2-3"></div>
+                      <div class="header-text snipcss0-2-2-4">
+                        {{ column.name }}
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="e-header-icon e-icons e-column-expand"
+                    tabindex="0"
+                    role="button"
+                    aria-label="Open Expand"
+                    (click)="addTicket(column.name)"
+                  ></div>
+                </div>
+              </th>
+            </div>
+            <div
+              class="tasks-container"
+              id="{{ column.id }}"
+              [cdkDropListConnectedTo]="ticketStatusValues"
+              cdkDropList
+              [cdkDropListData]="column.tasks"
+              (cdkDropListDropped)="drop($event)"
+            >
+              <div class="task" *ngFor="let item of column.tasks" cdkDrag>
+                <jhi-board-ticket
+                  [ticket]="getTicket(item)"
+                  [username]="this.username"
+                  [userId]="this.userId"
+                  (refresh)="handleRefresh()"
+                ></jhi-board-ticket>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

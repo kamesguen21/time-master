@@ -1,0 +1,27 @@
+<div
+  class="e-card e-template Critical e-droppable e-lib e-draggable snipcss-WBG8Z"
+  *ngIf="ticket && username"
+  data-id="Task - 29033"
+  data-key="Open"
+  aria-selected="false"
+  tabindex="-1"
+  role="option"
+>
+  <div class="card-template" style="margin-left: 1rem">
+    <div class="e-card-header">
+      <div class="e-card-header-caption">
+        <div class="e-card-header-title e-tooltip-text" data-tooltip-id="Kanban_18_content">
+          {{ ticket?.jiraKey }} <b>{{ calculateLog(ticket.workLogs) }}</b>
+        </div>
+      </div>
+    </div>
+    <div class="e-card-content e-tooltip-text">
+      <div class="e-text">
+        {{ ticket?.description }}
+      </div>
+    </div>
+    <div class="e-card-custom-footer">
+      <button class="e-card-tag-field e-tooltip-text btn" (click)="logTime()">logTime</button>
+    </div>
+  </div>
+</div>

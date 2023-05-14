@@ -1,7 +1,7 @@
 {
   "applications": ["timemaster"],
   "changelogDate": "20230514141817",
-  "dto": "no",
+  "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "ticket",
   "fields": [
@@ -22,12 +22,17 @@
     {
       "fieldName": "userId",
       "fieldType": "Long"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "TicketStatus",
+      "fieldValues": "PENDING,IN_PROGRESS,TO_REVIEW,DONE"
     }
   ],
   "fluentMethods": true,
-  "jpaMetamodelFiltering": false,
+  "jpaMetamodelFiltering": true,
   "name": "Ticket",
-  "pagination": "no",
+  "pagination": "pagination",
   "readOnly": false,
   "relationships": [
     {
@@ -37,5 +42,5 @@
       "relationshipType": "one-to-many"
     }
   ],
-  "service": "no"
+  "service": "serviceImpl"
 }

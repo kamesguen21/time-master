@@ -1,7 +1,7 @@
 {
   "applications": ["timemaster"],
   "changelogDate": "20230514141819",
-  "dto": "no",
+  "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "work_log",
   "fields": [
@@ -21,9 +21,9 @@
     }
   ],
   "fluentMethods": true,
-  "jpaMetamodelFiltering": false,
+  "jpaMetamodelFiltering": true,
   "name": "WorkLog",
-  "pagination": "no",
+  "pagination": "pagination",
   "readOnly": false,
   "relationships": [
     {
@@ -33,5 +33,5 @@
       "relationshipType": "many-to-one"
     }
   ],
-  "service": "no"
+  "service": "serviceImpl"
 }

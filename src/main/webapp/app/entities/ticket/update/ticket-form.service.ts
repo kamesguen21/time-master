@@ -22,6 +22,7 @@ type TicketFormGroupContent = {
   summary: FormControl<ITicket['summary']>;
   description: FormControl<ITicket['description']>;
   userId: FormControl<ITicket['userId']>;
+  status: FormControl<ITicket['status']>;
 };
 
 export type TicketFormGroup = FormGroup<TicketFormGroupContent>;
@@ -49,6 +50,7 @@ export class TicketFormService {
       }),
       description: new FormControl(ticketRawValue.description),
       userId: new FormControl(ticketRawValue.userId),
+      status: new FormControl(ticketRawValue.status),
     });
   }
 

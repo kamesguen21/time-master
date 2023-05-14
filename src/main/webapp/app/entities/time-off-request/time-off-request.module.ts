@@ -5,14 +5,17 @@ import { TimeOffRequestDetailComponent } from './detail/time-off-request-detail.
 import { TimeOffRequestUpdateComponent } from './update/time-off-request-update.component';
 import { TimeOffRequestDeleteDialogComponent } from './delete/time-off-request-delete-dialog.component';
 import { TimeOffRequestRoutingModule } from './route/time-off-request-routing.module';
+import { TimeOffCalendarComponent } from './time-off-calendar/time-off-calendar.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
-  imports: [SharedModule, TimeOffRequestRoutingModule],
+  imports: [SharedModule, TimeOffRequestRoutingModule, FullCalendarModule],
   declarations: [
     TimeOffRequestComponent,
     TimeOffRequestDetailComponent,
     TimeOffRequestUpdateComponent,
     TimeOffRequestDeleteDialogComponent,
+    TimeOffCalendarComponent,
   ],
 })
 export class TimeOffRequestModule {}

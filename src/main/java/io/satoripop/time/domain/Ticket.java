@@ -1,6 +1,7 @@
 package io.satoripop.time.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.satoripop.time.domain.enumeration.TicketStatus;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +38,11 @@ public class Ticket implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    @OneToMany(mappedBy = "ticket")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private TicketStatus status;
+
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "ticket" }, allowSetters = true)
     private Set<WorkLog> workLogs = new HashSet<>();
 
@@ -108,6 +113,19 @@ public class Ticket implements Serializable {
         this.userId = userId;
     }
 
+    public TicketStatus getStatus() {
+        return this.status;
+    }
+
+    public Ticket status(TicketStatus status) {
+        this.setStatus(status);
+        return this;
+    }
+
+    public void setStatus(TicketStatus status) {
+        this.status = status;
+    }
+
     public Set<WorkLog> getWorkLogs() {
         return this.workLogs;
     }
@@ -167,6 +185,7 @@ public class Ticket implements Serializable {
             ", summary='" + getSummary() + "'" +
             ", description='" + getDescription() + "'" +
             ", userId=" + getUserId() +
+            ", status='" + getStatus() + "'" +
             "}";
     }
 }

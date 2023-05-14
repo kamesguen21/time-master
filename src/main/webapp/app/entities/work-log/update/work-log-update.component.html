@@ -59,7 +59,7 @@
             [compareWith]="compareTicket"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="ticketOption" *ngFor="let ticketOption of ticketsSharedCollection">{{ ticketOption.summary }}</option>
+            <option [ngValue]="ticketOption" *ngFor="let ticketOption of ticketsSharedCollection">{{ ticketOption.id }}</option>
           </select>
         </div>
       </div>

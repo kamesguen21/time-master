@@ -7,6 +7,7 @@ import { finalize } from 'rxjs/operators';
 import { TimeOffRequestFormService, TimeOffRequestFormGroup } from './time-off-request-form.service';
 import { ITimeOffRequest } from '../time-off-request.model';
 import { TimeOffRequestService } from '../service/time-off-request.service';
+import { TimeOffRequestStatus } from 'app/entities/enumerations/time-off-request-status.model';
 
 @Component({
   selector: 'jhi-time-off-request-update',
@@ -15,6 +16,7 @@ import { TimeOffRequestService } from '../service/time-off-request.service';
 export class TimeOffRequestUpdateComponent implements OnInit {
   isSaving = false;
   timeOffRequest: ITimeOffRequest | null = null;
+  timeOffRequestStatusValues = Object.keys(TimeOffRequestStatus);
 
   editForm: TimeOffRequestFormGroup = this.timeOffRequestFormService.createTimeOffRequestFormGroup();
 

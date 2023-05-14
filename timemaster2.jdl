@@ -1,0 +1,83 @@
+application {
+  config {
+    applicationType monolith
+    authenticationType jwt
+    baseName timemaster
+    blueprints []
+    buildTool maven
+    cacheProvider no
+    clientFramework angularX
+    clientPackageManager npm
+    clientTheme none
+    creationTimestamp 1684073203902
+    databaseType sql
+    devDatabaseType h2Disk
+    dtoSuffix DTO
+    enableGradleEnterprise false
+    enableHibernateCache false
+    enableSwaggerCodegen false
+    enableTranslation false
+    gradleEnterpriseHost ""
+    jhiPrefix jhi
+    jhipsterVersion "7.9.3"
+    jwtSecretKey "ZmVhMGZlMzgyOWM5NWI1MzU0NGI3MGVmY2NmYzRjNzM5NWNjZDFhODFlOGNjZWQ3M2VjNTUxMmU0YWEyMzliOGU2YzFmY2NlMTZiOTZlZTdhZWYwODg0ZWVjZGZlODgxNTVhYTM5MGFlNTdhN2YwNzc4NTA5YjBlYTYyNDE0Nzc="
+    languages [en, fr]
+    messageBroker false
+    microfrontend false
+    microfrontends []
+    nativeLanguage en
+    otherModules []
+    packageName io.satoripop.time
+    prodDatabaseType postgresql
+    reactive false
+    searchEngine false
+    serverPort 8080
+    serviceDiscoveryType no
+    skipClient false
+    skipUserManagement false
+    testFrameworks []
+    websocket false
+    withAdminUi true
+  }
+
+  entities Ticket, TimeOffRequest, WorkLog
+}
+
+entity Ticket {
+  jiraKey String required
+  summary String required
+  description String
+  userId Long
+  status TicketStatus
+}
+entity TimeOffRequest {
+  startDate Instant required
+  endDate Instant required
+  status TimeOffRequestStatus
+  userId Long
+}
+entity WorkLog {
+  timeSpent Integer required
+  date Instant required
+  userId Long
+}
+enum TicketStatus {
+  PENDING,
+  IN_PROGRESS,
+  TO_REVIEW,
+  DONE
+}
+enum TimeOffRequestStatus {
+  PENDING,
+  APPROVED,
+  REJECTED
+}
+
+relationship OneToMany {
+  Ticket{workLog} to WorkLog{ticket}
+}
+dto Ticket, TimeOffRequest, WorkLog with mapstruct
+paginate Ticket, TimeOffRequest, WorkLog with pagination
+service Ticket, TimeOffRequest, WorkLog with serviceClass
+service Ticket, TimeOffRequest, WorkLog with serviceImpl
+filter Ticket, TimeOffRequest, WorkLog

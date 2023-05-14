@@ -1,30 +1,37 @@
-import {Component, OnInit} from '@angular/core';
-import {HttpResponse} from '@angular/common/http';
-import {ActivatedRoute} from '@angular/router';
-import {Observable} from 'rxjs';
-import {finalize} from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
-import {TicketFormService, TicketFormGroup} from './ticket-form.service';
-import {ITicket} from '../ticket.model';
-import {TicketService} from '../service/ticket.service';
-import {IUser} from "../../../admin/user-management/user-management.model";
-import {UserManagementService} from "../../../admin/user-management/service/user-management.service";
+import { TicketFormService, TicketFormGroup } from './ticket-form.service';
+import { ITicket } from '../ticket.model';
+import { TicketService } from '../service/ticket.service';
+import { TicketStatus } from 'app/entities/enumerations/ticket-status.model';
+import { IUser } from '../../../admin/user-management/user-management.model';
+import { UserManagementService } from '../../../admin/user-management/service/user-management.service';
 
 @Component({
-  selector: 'jhi-ticket-update', templateUrl: './ticket-update.component.html',
+  selector: 'jhi-ticket-update',
+  templateUrl: './ticket-update.component.html',
 })
 export class TicketUpdateComponent implements OnInit {
   isSaving = false;
   ticket: ITicket | null = null;
+  ticketStatusValues = Object.keys(TicketStatus);
   users: IUser[] | null = null;
 
   editForm: TicketFormGroup = this.ticketFormService.createTicketFormGroup();
 
-  constructor(protected ticketService: TicketService, protected userManagementService: UserManagementService, protected ticketFormService: TicketFormService, protected activatedRoute: ActivatedRoute) {
-  }
+  constructor(
+    protected ticketService: TicketService,
+    protected userManagementService: UserManagementService,
+    protected ticketFormService: TicketFormService,
+    protected activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.data.subscribe(({ticket}) => {
+    this.activatedRoute.data.subscribe(({ ticket }) => {
       this.ticket = ticket;
       if (ticket) {
         this.updateForm(ticket);
@@ -32,7 +39,7 @@ export class TicketUpdateComponent implements OnInit {
     });
     this.userManagementService.query().subscribe(value => {
       this.users = value.body;
-    })
+    });
   }
   compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userManagementService.compareUser(o1, o2);
 
@@ -52,7 +59,8 @@ export class TicketUpdateComponent implements OnInit {
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<ITicket>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(), error: () => this.onSaveError(),
+      next: () => this.onSaveSuccess(),
+      error: () => this.onSaveError(),
     });
   }
 

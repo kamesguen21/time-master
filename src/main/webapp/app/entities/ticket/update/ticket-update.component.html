@@ -53,6 +53,14 @@
             <option [ngValue]="userOption.id" *ngFor="let userOption of users">{{ userOption.login }}</option>
           </select>
         </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_status">Status</label>
+          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let ticketStatus of ticketStatusValues" [value]="ticketStatus">{{ ticketStatus }}</option>
+          </select>
+        </div>
       </div>
 
       <div>
