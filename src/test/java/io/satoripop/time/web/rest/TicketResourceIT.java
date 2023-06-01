@@ -50,6 +50,9 @@ class TicketResourceIT {
     private static final TicketStatus DEFAULT_STATUS = TicketStatus.PENDING;
     private static final TicketStatus UPDATED_STATUS = TicketStatus.IN_PROGRESS;
 
+    private static final String DEFAULT_USER_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_USER_NAME = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/tickets";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -82,7 +85,8 @@ class TicketResourceIT {
             .summary(DEFAULT_SUMMARY)
             .description(DEFAULT_DESCRIPTION)
             .userId(DEFAULT_USER_ID)
-            .status(DEFAULT_STATUS);
+            .status(DEFAULT_STATUS)
+            .userName(DEFAULT_USER_NAME);
         return ticket;
     }
 
@@ -98,7 +102,8 @@ class TicketResourceIT {
             .summary(UPDATED_SUMMARY)
             .description(UPDATED_DESCRIPTION)
             .userId(UPDATED_USER_ID)
-            .status(UPDATED_STATUS);
+            .status(UPDATED_STATUS)
+            .userName(UPDATED_USER_NAME);
         return ticket;
     }
 
@@ -126,6 +131,7 @@ class TicketResourceIT {
         assertThat(testTicket.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testTicket.getUserId()).isEqualTo(DEFAULT_USER_ID);
         assertThat(testTicket.getStatus()).isEqualTo(DEFAULT_STATUS);
+        assertThat(testTicket.getUserName()).isEqualTo(DEFAULT_USER_NAME);
     }
 
     @Test
@@ -199,7 +205,8 @@ class TicketResourceIT {
             .andExpect(jsonPath("$.[*].summary").value(hasItem(DEFAULT_SUMMARY)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].userName").value(hasItem(DEFAULT_USER_NAME)));
     }
 
     @Test
@@ -218,7 +225,8 @@ class TicketResourceIT {
             .andExpect(jsonPath("$.summary").value(DEFAULT_SUMMARY))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
             .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
-            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
+            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
+            .andExpect(jsonPath("$.userName").value(DEFAULT_USER_NAME));
     }
 
     @Test
@@ -566,6 +574,71 @@ class TicketResourceIT {
 
     @Test
     @Transactional
+    void getAllTicketsByUserNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        ticketRepository.saveAndFlush(ticket);
+
+        // Get all the ticketList where userName equals to DEFAULT_USER_NAME
+        defaultTicketShouldBeFound("userName.equals=" + DEFAULT_USER_NAME);
+
+        // Get all the ticketList where userName equals to UPDATED_USER_NAME
+        defaultTicketShouldNotBeFound("userName.equals=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllTicketsByUserNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        ticketRepository.saveAndFlush(ticket);
+
+        // Get all the ticketList where userName in DEFAULT_USER_NAME or UPDATED_USER_NAME
+        defaultTicketShouldBeFound("userName.in=" + DEFAULT_USER_NAME + "," + UPDATED_USER_NAME);
+
+        // Get all the ticketList where userName equals to UPDATED_USER_NAME
+        defaultTicketShouldNotBeFound("userName.in=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllTicketsByUserNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        ticketRepository.saveAndFlush(ticket);
+
+        // Get all the ticketList where userName is not null
+        defaultTicketShouldBeFound("userName.specified=true");
+
+        // Get all the ticketList where userName is null
+        defaultTicketShouldNotBeFound("userName.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllTicketsByUserNameContainsSomething() throws Exception {
+        // Initialize the database
+        ticketRepository.saveAndFlush(ticket);
+
+        // Get all the ticketList where userName contains DEFAULT_USER_NAME
+        defaultTicketShouldBeFound("userName.contains=" + DEFAULT_USER_NAME);
+
+        // Get all the ticketList where userName contains UPDATED_USER_NAME
+        defaultTicketShouldNotBeFound("userName.contains=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllTicketsByUserNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        ticketRepository.saveAndFlush(ticket);
+
+        // Get all the ticketList where userName does not contain DEFAULT_USER_NAME
+        defaultTicketShouldNotBeFound("userName.doesNotContain=" + DEFAULT_USER_NAME);
+
+        // Get all the ticketList where userName does not contain UPDATED_USER_NAME
+        defaultTicketShouldBeFound("userName.doesNotContain=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
     void getAllTicketsByWorkLogIsEqualToSomething() throws Exception {
         WorkLog workLog;
         if (TestUtil.findAll(em, WorkLog.class).isEmpty()) {
@@ -600,7 +673,8 @@ class TicketResourceIT {
             .andExpect(jsonPath("$.[*].summary").value(hasItem(DEFAULT_SUMMARY)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].userName").value(hasItem(DEFAULT_USER_NAME)));
 
         // Check, that the count call also returns 1
         restTicketMockMvc
@@ -653,7 +727,8 @@ class TicketResourceIT {
             .summary(UPDATED_SUMMARY)
             .description(UPDATED_DESCRIPTION)
             .userId(UPDATED_USER_ID)
-            .status(UPDATED_STATUS);
+            .status(UPDATED_STATUS)
+            .userName(UPDATED_USER_NAME);
         TicketDTO ticketDTO = ticketMapper.toDto(updatedTicket);
 
         restTicketMockMvc
@@ -673,6 +748,7 @@ class TicketResourceIT {
         assertThat(testTicket.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testTicket.getUserId()).isEqualTo(UPDATED_USER_ID);
         assertThat(testTicket.getStatus()).isEqualTo(UPDATED_STATUS);
+        assertThat(testTicket.getUserName()).isEqualTo(UPDATED_USER_NAME);
     }
 
     @Test
@@ -771,6 +847,7 @@ class TicketResourceIT {
         assertThat(testTicket.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testTicket.getUserId()).isEqualTo(DEFAULT_USER_ID);
         assertThat(testTicket.getStatus()).isEqualTo(DEFAULT_STATUS);
+        assertThat(testTicket.getUserName()).isEqualTo(DEFAULT_USER_NAME);
     }
 
     @Test
@@ -790,7 +867,8 @@ class TicketResourceIT {
             .summary(UPDATED_SUMMARY)
             .description(UPDATED_DESCRIPTION)
             .userId(UPDATED_USER_ID)
-            .status(UPDATED_STATUS);
+            .status(UPDATED_STATUS)
+            .userName(UPDATED_USER_NAME);
 
         restTicketMockMvc
             .perform(
@@ -809,6 +887,7 @@ class TicketResourceIT {
         assertThat(testTicket.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testTicket.getUserId()).isEqualTo(UPDATED_USER_ID);
         assertThat(testTicket.getStatus()).isEqualTo(UPDATED_STATUS);
+        assertThat(testTicket.getUserName()).isEqualTo(UPDATED_USER_NAME);
     }
 
     @Test

@@ -9,6 +9,7 @@ export interface ITicket {
   userId?: number | null;
   status?: TicketStatus | null | string;
   workLogs?: IWorkLog[] | null;
+  userName?: string | null;
 }
 
 export type NewTicket = Omit<ITicket, 'id'> & { id: null };

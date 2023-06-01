@@ -27,6 +27,10 @@
       "fieldName": "status",
       "fieldType": "TicketStatus",
       "fieldValues": "PENDING,IN_PROGRESS,TO_REVIEW,DONE"
+    },
+    {
+      "fieldName": "userName",
+      "fieldType": "String"
     }
   ],
   "fluentMethods": true,

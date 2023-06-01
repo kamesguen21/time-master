@@ -104,6 +104,9 @@ public class TicketQueryService extends QueryService<Ticket> {
             if (criteria.getStatus() != null) {
                 specification = specification.and(buildSpecification(criteria.getStatus(), Ticket_.status));
             }
+            if (criteria.getUserName() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getUserName(), Ticket_.userName));
+            }
             if (criteria.getWorkLogId() != null) {
                 specification =
                     specification.and(

@@ -25,6 +25,8 @@ public class TicketDTO implements Serializable {
 
     private TicketStatus status;
 
+    private String userName;
+
     public Long getId() {
         return id;
     }
@@ -73,6 +75,14 @@ public class TicketDTO implements Serializable {
         this.status = status;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -104,6 +114,7 @@ public class TicketDTO implements Serializable {
             ", description='" + getDescription() + "'" +
             ", userId=" + getUserId() +
             ", status='" + getStatus() + "'" +
+            ", userName='" + getUserName() + "'" +
             "}";
     }
 }

@@ -42,6 +42,9 @@ public class Ticket implements Serializable {
     @Column(name = "status")
     private TicketStatus status;
 
+    @Column(name = "user_name")
+    private String userName;
+
     @OneToMany(mappedBy = "ticket", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "ticket" }, allowSetters = true)
     private Set<WorkLog> workLogs = new HashSet<>();
@@ -126,6 +129,19 @@ public class Ticket implements Serializable {
         this.status = status;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public Ticket userName(String userName) {
+        this.setUserName(userName);
+        return this;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public Set<WorkLog> getWorkLogs() {
         return this.workLogs;
     }
@@ -186,6 +202,7 @@ public class Ticket implements Serializable {
             ", description='" + getDescription() + "'" +
             ", userId=" + getUserId() +
             ", status='" + getStatus() + "'" +
+            ", userName='" + getUserName() + "'" +
             "}";
     }
 }

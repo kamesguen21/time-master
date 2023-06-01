@@ -51,6 +51,8 @@ public class TicketCriteria implements Serializable, Criteria {
 
     private TicketStatusFilter status;
 
+    private StringFilter userName;
+
     private LongFilter workLogId;
 
     private Boolean distinct;
@@ -64,6 +66,7 @@ public class TicketCriteria implements Serializable, Criteria {
         this.description = other.description == null ? null : other.description.copy();
         this.userId = other.userId == null ? null : other.userId.copy();
         this.status = other.status == null ? null : other.status.copy();
+        this.userName = other.userName == null ? null : other.userName.copy();
         this.workLogId = other.workLogId == null ? null : other.workLogId.copy();
         this.distinct = other.distinct;
     }
@@ -163,6 +166,21 @@ public class TicketCriteria implements Serializable, Criteria {
         this.status = status;
     }
 
+    public StringFilter getUserName() {
+        return userName;
+    }
+
+    public StringFilter userName() {
+        if (userName == null) {
+            userName = new StringFilter();
+        }
+        return userName;
+    }
+
+    public void setUserName(StringFilter userName) {
+        this.userName = userName;
+    }
+
     public LongFilter getWorkLogId() {
         return workLogId;
     }
@@ -202,6 +220,7 @@ public class TicketCriteria implements Serializable, Criteria {
             Objects.equals(description, that.description) &&
             Objects.equals(userId, that.userId) &&
             Objects.equals(status, that.status) &&
+            Objects.equals(userName, that.userName) &&
             Objects.equals(workLogId, that.workLogId) &&
             Objects.equals(distinct, that.distinct)
         );
@@ -209,7 +228,7 @@ public class TicketCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, jiraKey, summary, description, userId, status, workLogId, distinct);
+        return Objects.hash(id, jiraKey, summary, description, userId, status, userName, workLogId, distinct);
     }
 
     // prettier-ignore
@@ -222,6 +241,7 @@ public class TicketCriteria implements Serializable, Criteria {
             (description != null ? "description=" + description + ", " : "") +
             (userId != null ? "userId=" + userId + ", " : "") +
             (status != null ? "status=" + status + ", " : "") +
+            (userName != null ? "userName=" + userName + ", " : "") +
             (workLogId != null ? "workLogId=" + workLogId + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";
