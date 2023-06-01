@@ -3,7 +3,9 @@ package io.satoripop.time.service.impl;
 import io.satoripop.time.domain.TimeOffRequest;
 import io.satoripop.time.repository.TimeOffRequestRepository;
 import io.satoripop.time.service.TimeOffRequestService;
+import io.satoripop.time.service.UserService;
 import io.satoripop.time.service.dto.TimeOffRequestDTO;
+import io.satoripop.time.service.dto.UserDTO;
 import io.satoripop.time.service.mapper.TimeOffRequestMapper;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -25,16 +27,28 @@ public class TimeOffRequestServiceImpl implements TimeOffRequestService {
     private final TimeOffRequestRepository timeOffRequestRepository;
 
     private final TimeOffRequestMapper timeOffRequestMapper;
+    private final UserService userService;
 
-    public TimeOffRequestServiceImpl(TimeOffRequestRepository timeOffRequestRepository, TimeOffRequestMapper timeOffRequestMapper) {
+    public TimeOffRequestServiceImpl(
+        TimeOffRequestRepository timeOffRequestRepository,
+        TimeOffRequestMapper timeOffRequestMapper,
+        UserService userService
+    ) {
         this.timeOffRequestRepository = timeOffRequestRepository;
         this.timeOffRequestMapper = timeOffRequestMapper;
+        this.userService = userService;
     }
 
     @Override
     public TimeOffRequestDTO save(TimeOffRequestDTO timeOffRequestDTO) {
         log.debug("Request to save TimeOffRequest : {}", timeOffRequestDTO);
         TimeOffRequest timeOffRequest = timeOffRequestMapper.toEntity(timeOffRequestDTO);
+        if (timeOffRequest.getUserId() != null) {
+            Optional<UserDTO> userById = userService.getUserById(timeOffRequest.getUserId());
+            if (userById.isPresent()) {
+                timeOffRequest.setUserName(userById.get().getLogin());
+            }
+        }
         timeOffRequest = timeOffRequestRepository.save(timeOffRequest);
         return timeOffRequestMapper.toDto(timeOffRequest);
     }
@@ -43,6 +57,12 @@ public class TimeOffRequestServiceImpl implements TimeOffRequestService {
     public TimeOffRequestDTO update(TimeOffRequestDTO timeOffRequestDTO) {
         log.debug("Request to update TimeOffRequest : {}", timeOffRequestDTO);
         TimeOffRequest timeOffRequest = timeOffRequestMapper.toEntity(timeOffRequestDTO);
+        if (timeOffRequest.getUserId() != null) {
+            Optional<UserDTO> userById = userService.getUserById(timeOffRequest.getUserId());
+            if (userById.isPresent()) {
+                timeOffRequest.setUserName(userById.get().getLogin());
+            }
+        }
         timeOffRequest = timeOffRequestRepository.save(timeOffRequest);
         return timeOffRequestMapper.toDto(timeOffRequest);
     }

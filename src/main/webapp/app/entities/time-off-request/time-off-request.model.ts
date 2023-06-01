@@ -8,6 +8,7 @@ export interface ITimeOffRequest {
   status?: TimeOffRequestStatus | null;
   userId?: number | null;
   leaveReason?: string | null;
+  userName?: string | null;
 }
 
 export type NewTimeOffRequest = Omit<ITimeOffRequest, 'id'> & { id: null };

@@ -51,6 +51,8 @@ public class TimeOffRequestCriteria implements Serializable, Criteria {
 
     private StringFilter leaveReason;
 
+    private StringFilter userName;
+
     private Boolean distinct;
 
     public TimeOffRequestCriteria() {}
@@ -62,6 +64,7 @@ public class TimeOffRequestCriteria implements Serializable, Criteria {
         this.status = other.status == null ? null : other.status.copy();
         this.userId = other.userId == null ? null : other.userId.copy();
         this.leaveReason = other.leaveReason == null ? null : other.leaveReason.copy();
+        this.userName = other.userName == null ? null : other.userName.copy();
         this.distinct = other.distinct;
     }
 
@@ -160,6 +163,21 @@ public class TimeOffRequestCriteria implements Serializable, Criteria {
         this.leaveReason = leaveReason;
     }
 
+    public StringFilter getUserName() {
+        return userName;
+    }
+
+    public StringFilter userName() {
+        if (userName == null) {
+            userName = new StringFilter();
+        }
+        return userName;
+    }
+
+    public void setUserName(StringFilter userName) {
+        this.userName = userName;
+    }
+
     public Boolean getDistinct() {
         return distinct;
     }
@@ -184,13 +202,14 @@ public class TimeOffRequestCriteria implements Serializable, Criteria {
             Objects.equals(status, that.status) &&
             Objects.equals(userId, that.userId) &&
             Objects.equals(leaveReason, that.leaveReason) &&
+            Objects.equals(userName, that.userName) &&
             Objects.equals(distinct, that.distinct)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startDate, endDate, status, userId, leaveReason, distinct);
+        return Objects.hash(id, startDate, endDate, status, userId, leaveReason, userName, distinct);
     }
 
     // prettier-ignore
@@ -203,6 +222,7 @@ public class TimeOffRequestCriteria implements Serializable, Criteria {
             (status != null ? "status=" + status + ", " : "") +
             (userId != null ? "userId=" + userId + ", " : "") +
             (leaveReason != null ? "leaveReason=" + leaveReason + ", " : "") +
+            (userName != null ? "userName=" + userName + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";
     }

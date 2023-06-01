@@ -29,6 +29,9 @@
             <column name="leave_reason" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
+            <column name="user_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="time_off_request" columnName="start_date" columnDataType="${datetimeType}"/>
@@ -57,6 +60,7 @@
             <column name="status" type="string"/>
             <column name="user_id" type="numeric"/>
             <column name="leave_reason" type="string"/>
+            <column name="user_name" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

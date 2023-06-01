@@ -26,6 +26,8 @@ public class TimeOffRequestDTO implements Serializable {
 
     private String leaveReason;
 
+    private String userName;
+
     public Long getId() {
         return id;
     }
@@ -74,6 +76,14 @@ public class TimeOffRequestDTO implements Serializable {
         this.leaveReason = leaveReason;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -105,6 +115,7 @@ public class TimeOffRequestDTO implements Serializable {
             ", status='" + getStatus() + "'" +
             ", userId=" + getUserId() +
             ", leaveReason='" + getLeaveReason() + "'" +
+            ", userName='" + getUserName() + "'" +
             "}";
     }
 }

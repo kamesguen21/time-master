@@ -40,6 +40,9 @@ public class TimeOffRequest implements Serializable {
     @Column(name = "leave_reason")
     private String leaveReason;
 
+    @Column(name = "user_name")
+    private String userName;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -120,6 +123,19 @@ public class TimeOffRequest implements Serializable {
         this.leaveReason = leaveReason;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public TimeOffRequest userName(String userName) {
+        this.setUserName(userName);
+        return this;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -149,6 +165,7 @@ public class TimeOffRequest implements Serializable {
             ", status='" + getStatus() + "'" +
             ", userId=" + getUserId() +
             ", leaveReason='" + getLeaveReason() + "'" +
+            ", userName='" + getUserName() + "'" +
             "}";
     }
 }

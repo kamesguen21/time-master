@@ -58,9 +58,9 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="userId">
+          <th scope="col" jhiSortBy="userName">
             <div class="d-flex">
-              <span>User Id</span>
+              <span>User</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -70,6 +70,7 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
+
           <th scope="col"></th>
         </tr>
       </thead>
@@ -81,7 +82,14 @@
           <td>{{ timeOffRequest.startDate | formatMediumDatetime }}</td>
           <td>{{ timeOffRequest.endDate | formatMediumDatetime }}</td>
           <td>{{ timeOffRequest.status }}</td>
-          <td>{{ timeOffRequest.userId }}</td>
+          <td>
+            <div *ngIf="timeOffRequest.userName && timeOffRequest.userId">
+              <a [routerLink]="['/admin/user-management/' + timeOffRequest.userId + '/view']">{{ timeOffRequest.userName }}</a>
+            </div>
+            <div *ngIf="!timeOffRequest.userId">
+              <td>{{ timeOffRequest.userName }}</td>
+            </div>
+          </td>
           <td>{{ timeOffRequest.leaveReason }}</td>
           <td class="text-end">
             <div class="btn-group">

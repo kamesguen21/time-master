@@ -105,6 +105,9 @@ public class TimeOffRequestQueryService extends QueryService<TimeOffRequest> {
             if (criteria.getLeaveReason() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getLeaveReason(), TimeOffRequest_.leaveReason));
             }
+            if (criteria.getUserName() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getUserName(), TimeOffRequest_.userName));
+            }
         }
         return specification;
     }
