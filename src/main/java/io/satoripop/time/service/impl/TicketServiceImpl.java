@@ -1,7 +1,9 @@
 package io.satoripop.time.service.impl;
 
 import io.satoripop.time.domain.Ticket;
+import io.satoripop.time.domain.WorkLog;
 import io.satoripop.time.repository.TicketRepository;
+import io.satoripop.time.repository.WorkLogRepository;
 import io.satoripop.time.service.TicketService;
 import io.satoripop.time.service.mapper.TicketMapper;
 import java.util.Optional;
@@ -22,11 +24,13 @@ public class TicketServiceImpl implements TicketService {
     private final Logger log = LoggerFactory.getLogger(TicketServiceImpl.class);
 
     private final TicketRepository ticketRepository;
+    private final WorkLogRepository workLogRepository;
 
     private final TicketMapper ticketMapper;
 
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketMapper ticketMapper) {
+    public TicketServiceImpl(TicketRepository ticketRepository, WorkLogRepository workLogRepository, TicketMapper ticketMapper) {
         this.ticketRepository = ticketRepository;
+        this.workLogRepository = workLogRepository;
         this.ticketMapper = ticketMapper;
     }
 
@@ -60,6 +64,12 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Ticket : {}", id);
+        Optional<Ticket> byId = ticketRepository.findById(id);
+        if(byId.isPresent()){
+            Ticket ticket = byId.get();
+            workLogRepository.deleteAll(ticket.getWorkLogs());
+
+        }
         ticketRepository.deleteById(id);
     }
 }
