@@ -21,6 +21,8 @@ public class WorkLogDTO implements Serializable {
 
     private Long userId;
 
+    private String userName;
+
     private TicketDTO ticket;
 
     public Long getId() {
@@ -53,6 +55,14 @@ public class WorkLogDTO implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public TicketDTO getTicket() {
@@ -92,6 +102,7 @@ public class WorkLogDTO implements Serializable {
             ", timeSpent=" + getTimeSpent() +
             ", date='" + getDate() + "'" +
             ", userId=" + getUserId() +
+            ", userName='" + getUserName() + "'" +
             ", ticket=" + getTicket() +
             "}";
     }

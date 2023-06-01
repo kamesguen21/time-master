@@ -99,6 +99,9 @@ public class WorkLogQueryService extends QueryService<WorkLog> {
             if (criteria.getUserId() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getUserId(), WorkLog_.userId));
             }
+            if (criteria.getUserName() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getUserName(), WorkLog_.userName));
+            }
             if (criteria.getTicketId() != null) {
                 specification =
                     specification.and(

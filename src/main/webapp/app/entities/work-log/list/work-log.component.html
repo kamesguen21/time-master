@@ -21,7 +21,7 @@
         id="jh-board-entity"
         data-cy="entityBoardButton"
         class="btn btn-primary jh-create-entity create-work-log"
-        [routerLink]="['/work-log/board']"
+        [routerLink]="['/']"
       >
         <fa-icon icon="plus"></fa-icon>
         <span> Board</span>
@@ -61,9 +61,9 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="userId">
+          <th scope="col" jhiSortBy="userName">
             <div class="d-flex">
-              <span>User Id</span>
+              <span>User Name</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -83,10 +83,17 @@
           </td>
           <td>{{ workLog.timeSpent }}</td>
           <td>{{ workLog.date | formatMediumDatetime }}</td>
-          <td>{{ workLog.userId }}</td>
+          <td>
+            <div *ngIf="workLog.userName && workLog.userId">
+              <a [routerLink]="['/admin/user-management/'+ workLog.userId+'/view']">{{workLog.userName  }}</a>
+            </div>
+            <div *ngIf="!workLog.userId">
+              <td>{{ workLog.userName }}</td>
+            </div>
+          </td>
           <td>
             <div *ngIf="workLog.ticket">
-              <a [routerLink]="['/ticket', workLog.ticket.id, 'view']">{{ workLog.ticket.id }}</a>
+              <a [routerLink]="['/ticket', workLog.ticket.id, 'view']">{{ workLog.ticket.jiraKey }}</a>
             </div>
           </td>
           <td class="text-end">

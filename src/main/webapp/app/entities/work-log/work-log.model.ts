@@ -6,7 +6,8 @@ export interface IWorkLog {
   timeSpent?: number | null;
   date?: dayjs.Dayjs | null;
   userId?: number | null;
-  ticket?: Pick<ITicket, 'id'> | null;
+  userName?: string | null;
+  ticket?: ITicket | null;
 }
 
 export type NewWorkLog = Omit<IWorkLog, 'id'> & { id: null };

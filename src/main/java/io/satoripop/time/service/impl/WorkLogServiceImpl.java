@@ -2,10 +2,14 @@ package io.satoripop.time.service.impl;
 
 import io.satoripop.time.domain.WorkLog;
 import io.satoripop.time.repository.WorkLogRepository;
+import io.satoripop.time.service.UserService;
 import io.satoripop.time.service.WorkLogService;
+import io.satoripop.time.service.dto.UserDTO;
 import io.satoripop.time.service.dto.WorkLogDTO;
 import io.satoripop.time.service.mapper.WorkLogMapper;
+
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,16 +29,24 @@ public class WorkLogServiceImpl implements WorkLogService {
     private final WorkLogRepository workLogRepository;
 
     private final WorkLogMapper workLogMapper;
+    private final UserService userService;
 
-    public WorkLogServiceImpl(WorkLogRepository workLogRepository, WorkLogMapper workLogMapper) {
+    public WorkLogServiceImpl(WorkLogRepository workLogRepository, WorkLogMapper workLogMapper, UserService userService) {
         this.workLogRepository = workLogRepository;
         this.workLogMapper = workLogMapper;
+        this.userService = userService;
     }
 
     @Override
     public WorkLogDTO save(WorkLogDTO workLogDTO) {
         log.debug("Request to save WorkLog : {}", workLogDTO);
         WorkLog workLog = workLogMapper.toEntity(workLogDTO);
+        if (workLog.getUserId() != null) {
+            Optional<UserDTO> userById = userService.getUserById(workLog.getUserId());
+            if (userById.isPresent()) {
+                workLog.setUserName(userById.get().getLogin());
+            }
+        }
         workLog = workLogRepository.save(workLog);
         return workLogMapper.toDto(workLog);
     }
@@ -43,6 +55,12 @@ public class WorkLogServiceImpl implements WorkLogService {
     public WorkLogDTO update(WorkLogDTO workLogDTO) {
         log.debug("Request to update WorkLog : {}", workLogDTO);
         WorkLog workLog = workLogMapper.toEntity(workLogDTO);
+        if (workLog.getUserId() != null) {
+            Optional<UserDTO> userById = userService.getUserById(workLog.getUserId());
+            if (userById.isPresent()) {
+                workLog.setUserName(userById.get().getLogin());
+            }
+        }
         workLog = workLogRepository.save(workLog);
         return workLogMapper.toDto(workLog);
     }
@@ -51,15 +69,11 @@ public class WorkLogServiceImpl implements WorkLogService {
     public Optional<WorkLogDTO> partialUpdate(WorkLogDTO workLogDTO) {
         log.debug("Request to partially update WorkLog : {}", workLogDTO);
 
-        return workLogRepository
-            .findById(workLogDTO.getId())
-            .map(existingWorkLog -> {
-                workLogMapper.partialUpdate(existingWorkLog, workLogDTO);
+        return workLogRepository.findById(workLogDTO.getId()).map(existingWorkLog -> {
+            workLogMapper.partialUpdate(existingWorkLog, workLogDTO);
 
-                return existingWorkLog;
-            })
-            .map(workLogRepository::save)
-            .map(workLogMapper::toDto);
+            return existingWorkLog;
+        }).map(workLogRepository::save).map(workLogMapper::toDto);
     }
 
     @Override

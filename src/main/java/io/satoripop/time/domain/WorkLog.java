@@ -33,6 +33,9 @@ public class WorkLog implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "user_name")
+    private String userName;
+
     @ManyToOne
     @JsonIgnoreProperties(value = { "workLogs" }, allowSetters = true)
     private Ticket ticket;
@@ -91,6 +94,19 @@ public class WorkLog implements Serializable {
         this.userId = userId;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public WorkLog userName(String userName) {
+        this.setUserName(userName);
+        return this;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public Ticket getTicket() {
         return this.ticket;
     }
@@ -131,6 +147,7 @@ public class WorkLog implements Serializable {
             ", timeSpent=" + getTimeSpent() +
             ", date='" + getDate() + "'" +
             ", userId=" + getUserId() +
+            ", userName='" + getUserName() + "'" +
             "}";
     }
 }

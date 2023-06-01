@@ -29,6 +29,8 @@ public class WorkLogCriteria implements Serializable, Criteria {
 
     private LongFilter userId;
 
+    private StringFilter userName;
+
     private LongFilter ticketId;
 
     private Boolean distinct;
@@ -40,6 +42,7 @@ public class WorkLogCriteria implements Serializable, Criteria {
         this.timeSpent = other.timeSpent == null ? null : other.timeSpent.copy();
         this.date = other.date == null ? null : other.date.copy();
         this.userId = other.userId == null ? null : other.userId.copy();
+        this.userName = other.userName == null ? null : other.userName.copy();
         this.ticketId = other.ticketId == null ? null : other.ticketId.copy();
         this.distinct = other.distinct;
     }
@@ -109,6 +112,21 @@ public class WorkLogCriteria implements Serializable, Criteria {
         this.userId = userId;
     }
 
+    public StringFilter getUserName() {
+        return userName;
+    }
+
+    public StringFilter userName() {
+        if (userName == null) {
+            userName = new StringFilter();
+        }
+        return userName;
+    }
+
+    public void setUserName(StringFilter userName) {
+        this.userName = userName;
+    }
+
     public LongFilter getTicketId() {
         return ticketId;
     }
@@ -146,6 +164,7 @@ public class WorkLogCriteria implements Serializable, Criteria {
             Objects.equals(timeSpent, that.timeSpent) &&
             Objects.equals(date, that.date) &&
             Objects.equals(userId, that.userId) &&
+            Objects.equals(userName, that.userName) &&
             Objects.equals(ticketId, that.ticketId) &&
             Objects.equals(distinct, that.distinct)
         );
@@ -153,7 +172,7 @@ public class WorkLogCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, timeSpent, date, userId, ticketId, distinct);
+        return Objects.hash(id, timeSpent, date, userId, userName, ticketId, distinct);
     }
 
     // prettier-ignore
@@ -164,6 +183,7 @@ public class WorkLogCriteria implements Serializable, Criteria {
             (timeSpent != null ? "timeSpent=" + timeSpent + ", " : "") +
             (date != null ? "date=" + date + ", " : "") +
             (userId != null ? "userId=" + userId + ", " : "") +
+            (userName != null ? "userName=" + userName + ", " : "") +
             (ticketId != null ? "ticketId=" + ticketId + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";

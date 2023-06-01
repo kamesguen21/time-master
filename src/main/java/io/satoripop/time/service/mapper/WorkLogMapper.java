@@ -15,7 +15,7 @@ public interface WorkLogMapper extends EntityMapper<WorkLogDTO, WorkLog> {
     WorkLogDTO toDto(WorkLog s);
 
     @Named("ticketId")
-    @BeanMapping(ignoreByDefault = true)
+    @BeanMapping(ignoreByDefault = false)
     @Mapping(target = "id", source = "id")
     TicketDTO toDtoTicketId(Ticket ticket);
 }

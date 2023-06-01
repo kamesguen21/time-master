@@ -27,6 +27,10 @@
     {
       "fieldName": "leaveReason",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "userName",
+      "fieldType": "String"
     }
   ],
   "fluentMethods": true,

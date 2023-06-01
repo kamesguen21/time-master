@@ -34,6 +34,7 @@ type WorkLogFormGroupContent = {
   timeSpent: FormControl<WorkLogFormRawValue['timeSpent']>;
   date: FormControl<WorkLogFormRawValue['date']>;
   userId: FormControl<WorkLogFormRawValue['userId']>;
+  userName: FormControl<WorkLogFormRawValue['userName']>;
   ticket: FormControl<WorkLogFormRawValue['ticket']>;
 };
 
@@ -61,6 +62,7 @@ export class WorkLogFormService {
         validators: [Validators.required],
       }),
       userId: new FormControl(workLogRawValue.userId),
+      userName: new FormControl(workLogRawValue.userName),
       ticket: new FormControl(workLogRawValue.ticket),
     });
   }

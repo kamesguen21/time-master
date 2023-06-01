@@ -46,6 +46,9 @@ class WorkLogResourceIT {
     private static final Long UPDATED_USER_ID = 2L;
     private static final Long SMALLER_USER_ID = 1L - 1L;
 
+    private static final String DEFAULT_USER_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_USER_NAME = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/work-logs";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -73,7 +76,11 @@ class WorkLogResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static WorkLog createEntity(EntityManager em) {
-        WorkLog workLog = new WorkLog().timeSpent(DEFAULT_TIME_SPENT).date(DEFAULT_DATE).userId(DEFAULT_USER_ID);
+        WorkLog workLog = new WorkLog()
+            .timeSpent(DEFAULT_TIME_SPENT)
+            .date(DEFAULT_DATE)
+            .userId(DEFAULT_USER_ID)
+            .userName(DEFAULT_USER_NAME);
         return workLog;
     }
 
@@ -84,7 +91,11 @@ class WorkLogResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static WorkLog createUpdatedEntity(EntityManager em) {
-        WorkLog workLog = new WorkLog().timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID);
+        WorkLog workLog = new WorkLog()
+            .timeSpent(UPDATED_TIME_SPENT)
+            .date(UPDATED_DATE)
+            .userId(UPDATED_USER_ID)
+            .userName(UPDATED_USER_NAME);
         return workLog;
     }
 
@@ -110,6 +121,7 @@ class WorkLogResourceIT {
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(DEFAULT_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(DEFAULT_DATE);
         assertThat(testWorkLog.getUserId()).isEqualTo(DEFAULT_USER_ID);
+        assertThat(testWorkLog.getUserName()).isEqualTo(DEFAULT_USER_NAME);
     }
 
     @Test
@@ -181,7 +193,8 @@ class WorkLogResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(workLog.getId().intValue())))
             .andExpect(jsonPath("$.[*].timeSpent").value(hasItem(DEFAULT_TIME_SPENT)))
             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
-            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())));
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
+            .andExpect(jsonPath("$.[*].userName").value(hasItem(DEFAULT_USER_NAME)));
     }
 
     @Test
@@ -198,7 +211,8 @@ class WorkLogResourceIT {
             .andExpect(jsonPath("$.id").value(workLog.getId().intValue()))
             .andExpect(jsonPath("$.timeSpent").value(DEFAULT_TIME_SPENT))
             .andExpect(jsonPath("$.date").value(DEFAULT_DATE.toString()))
-            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()));
+            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
+            .andExpect(jsonPath("$.userName").value(DEFAULT_USER_NAME));
     }
 
     @Test
@@ -442,6 +456,71 @@ class WorkLogResourceIT {
 
     @Test
     @Transactional
+    void getAllWorkLogsByUserNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        workLogRepository.saveAndFlush(workLog);
+
+        // Get all the workLogList where userName equals to DEFAULT_USER_NAME
+        defaultWorkLogShouldBeFound("userName.equals=" + DEFAULT_USER_NAME);
+
+        // Get all the workLogList where userName equals to UPDATED_USER_NAME
+        defaultWorkLogShouldNotBeFound("userName.equals=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkLogsByUserNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        workLogRepository.saveAndFlush(workLog);
+
+        // Get all the workLogList where userName in DEFAULT_USER_NAME or UPDATED_USER_NAME
+        defaultWorkLogShouldBeFound("userName.in=" + DEFAULT_USER_NAME + "," + UPDATED_USER_NAME);
+
+        // Get all the workLogList where userName equals to UPDATED_USER_NAME
+        defaultWorkLogShouldNotBeFound("userName.in=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkLogsByUserNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        workLogRepository.saveAndFlush(workLog);
+
+        // Get all the workLogList where userName is not null
+        defaultWorkLogShouldBeFound("userName.specified=true");
+
+        // Get all the workLogList where userName is null
+        defaultWorkLogShouldNotBeFound("userName.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkLogsByUserNameContainsSomething() throws Exception {
+        // Initialize the database
+        workLogRepository.saveAndFlush(workLog);
+
+        // Get all the workLogList where userName contains DEFAULT_USER_NAME
+        defaultWorkLogShouldBeFound("userName.contains=" + DEFAULT_USER_NAME);
+
+        // Get all the workLogList where userName contains UPDATED_USER_NAME
+        defaultWorkLogShouldNotBeFound("userName.contains=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllWorkLogsByUserNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        workLogRepository.saveAndFlush(workLog);
+
+        // Get all the workLogList where userName does not contain DEFAULT_USER_NAME
+        defaultWorkLogShouldNotBeFound("userName.doesNotContain=" + DEFAULT_USER_NAME);
+
+        // Get all the workLogList where userName does not contain UPDATED_USER_NAME
+        defaultWorkLogShouldBeFound("userName.doesNotContain=" + UPDATED_USER_NAME);
+    }
+
+    @Test
+    @Transactional
     void getAllWorkLogsByTicketIsEqualToSomething() throws Exception {
         Ticket ticket;
         if (TestUtil.findAll(em, Ticket.class).isEmpty()) {
@@ -474,7 +553,8 @@ class WorkLogResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(workLog.getId().intValue())))
             .andExpect(jsonPath("$.[*].timeSpent").value(hasItem(DEFAULT_TIME_SPENT)))
             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
-            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())));
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
+            .andExpect(jsonPath("$.[*].userName").value(hasItem(DEFAULT_USER_NAME)));
 
         // Check, that the count call also returns 1
         restWorkLogMockMvc
@@ -522,7 +602,7 @@ class WorkLogResourceIT {
         WorkLog updatedWorkLog = workLogRepository.findById(workLog.getId()).get();
         // Disconnect from session so that the updates on updatedWorkLog are not directly saved in db
         em.detach(updatedWorkLog);
-        updatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID);
+        updatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID).userName(UPDATED_USER_NAME);
         WorkLogDTO workLogDTO = workLogMapper.toDto(updatedWorkLog);
 
         restWorkLogMockMvc
@@ -540,6 +620,7 @@ class WorkLogResourceIT {
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(UPDATED_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(UPDATED_DATE);
         assertThat(testWorkLog.getUserId()).isEqualTo(UPDATED_USER_ID);
+        assertThat(testWorkLog.getUserName()).isEqualTo(UPDATED_USER_NAME);
     }
 
     @Test
@@ -636,6 +717,7 @@ class WorkLogResourceIT {
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(UPDATED_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(UPDATED_DATE);
         assertThat(testWorkLog.getUserId()).isEqualTo(UPDATED_USER_ID);
+        assertThat(testWorkLog.getUserName()).isEqualTo(DEFAULT_USER_NAME);
     }
 
     @Test
@@ -650,7 +732,7 @@ class WorkLogResourceIT {
         WorkLog partialUpdatedWorkLog = new WorkLog();
         partialUpdatedWorkLog.setId(workLog.getId());
 
-        partialUpdatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID);
+        partialUpdatedWorkLog.timeSpent(UPDATED_TIME_SPENT).date(UPDATED_DATE).userId(UPDATED_USER_ID).userName(UPDATED_USER_NAME);
 
         restWorkLogMockMvc
             .perform(
@@ -667,6 +749,7 @@ class WorkLogResourceIT {
         assertThat(testWorkLog.getTimeSpent()).isEqualTo(UPDATED_TIME_SPENT);
         assertThat(testWorkLog.getDate()).isEqualTo(UPDATED_DATE);
         assertThat(testWorkLog.getUserId()).isEqualTo(UPDATED_USER_ID);
+        assertThat(testWorkLog.getUserName()).isEqualTo(UPDATED_USER_NAME);
     }
 
     @Test
